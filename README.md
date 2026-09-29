@@ -2,16 +2,17 @@
 
 > **Remember the incident. Learn the solution. Solve the next one smarter.**
 
+[![Vercel](https://img.shields.io/badge/Vercel-Frontend%20Live-black?logo=vercel&logoColor=white)](https://recallops-ashy.vercel.app)
 [![Render](https://img.shields.io/badge/Render-Backend%20Live-46E3B7?logo=render&logoColor=white)](https://recallops-8qk9.onrender.com)
 [![Hindsight Cloud](https://img.shields.io/badge/Hindsight-Memory%20Online-6366F1)](https://api.hindsight.vectorize.io)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20DB-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 
-## 🌐 Live Deployments
+## 🌐 Live Production Deployments
 
-- **Backend API (Render)**: [`https://recallops-8qk9.onrender.com`](https://recallops-8qk9.onrender.com) (Status: `Live`)
-- **Health Check**: [`https://recallops-8qk9.onrender.com/health`](https://recallops-8qk9.onrender.com/health)
+- **Frontend Web App (Vercel)**: [`https://recallops-ashy.vercel.app`](https://recallops-ashy.vercel.app)
+- **Backend API (Render)**: [`https://recallops-8qk9.onrender.com`](https://recallops-8qk9.onrender.com) (Health: [`https://recallops-8qk9.onrender.com/health`](https://recallops-8qk9.onrender.com/health))
 - **Neural Memory Bank**: Vectorize Hindsight Cloud (`recallops-incidents`)
-- **Auth & Database**: Supabase PostgreSQL
+- **Auth & Database**: Supabase Authentication & PostgreSQL
 
 RecallOps is an AI-powered Incident Response Agent built for the **"AI Agents That Learn Using Hindsight"** hackathon. It uses **Hindsight (by Vectorize)** as its persistent long-term memory layer to learn from every production incident — storing root causes, resolutions, failed attempts, and engineer feedback — so that when the next similar incident hits, it already knows what works.
 
