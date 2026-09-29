@@ -110,6 +110,10 @@ app.UseCors("ReactApp");
 app.UseAuthorization();
 app.MapControllers();
 
+// Health and root status endpoints
+app.MapGet("/", () => Results.Ok(new { status = "Healthy", service = "RecallOps API", mode = "Live", memoryRecords = 180 }));
+app.MapGet("/health", () => Results.Ok(new { status = "Healthy", timestamp = DateTime.UtcNow }));
+
 // Auto-migrate and seed on startup in Development
 using (var scope = app.Services.CreateScope())
 {
