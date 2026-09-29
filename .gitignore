@@ -1,0 +1,54 @@
+# RecallOps .gitignore
+
+# Secrets and environment files
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+appsettings.Development.json
+**/user-secrets.json
+
+# Local Databases
+*.db
+*.db-shm
+*.db-wal
+recallops.db
+RecallOps.Api/recallops.db
+
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+
+# EF migrations (keep Migrations folder but ignore snapshots if desired)
+# Uncomment if you want to track migrations:
+# !**/Migrations/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.log
+
+# Data files (local memory - may contain sensitive info)
+data/local-memory.json
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+
+# Build artifacts
+RecallOps.Api/bin/
+RecallOps.Api/obj/
+RecallOps.Api.Tests/bin/
+RecallOps.Api.Tests/obj/

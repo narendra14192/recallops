@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: recallops-api
+    runtime: docker
+    dockerfilePath: ./RecallOps.Api/Dockerfile
+    dockerContext: ./RecallOps.Api
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Hindsight__Mode
+        value: Live
+      - key: Hindsight__ApiKey
+        sync: false
+      - key: Groq__ApiKey
+        sync: false
+      - key: Groq__DefaultModel
+        value: openai/gpt-oss-120b
+      - key: Groq__FallbackModel
+        value: qwen/qwen3.8-27b

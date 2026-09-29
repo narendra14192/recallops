@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: recallops-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: recallops
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d recallops"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Optional: Hindsight self-hosted
+  # hindsight:
+  #   image: ghcr.io/vectorize-io/hindsight:latest
+  #   container_name: recallops-hindsight
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8888:8888"
+  #     - "9999:9999"
+  #   environment:
+  #     HINDSIGHT_API_LLM_API_KEY: ${GROQ_API_KEY}
+  #     HINDSIGHT_API_LLM_PROVIDER: groq
+  #     HINDSIGHT_API_LLM_MODEL: llama-3.3-70b-versatile
+  #   volumes:
+  #     - hindsight_data:/home/hindsight/.pg0
+
+volumes:
+  postgres_data:
+  # hindsight_data:

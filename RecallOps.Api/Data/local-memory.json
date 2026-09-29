@@ -1,0 +1,1293 @@
+{
+  "recallops-incidents": [
+    {
+      "Id": "ccfe5bf3-0b17-4247-9f29-20990685cc4a",
+      "Content": "Incident INC-1001 on Payment API (Production): SSL Certificate Error.\nSeverity: Critical.\nDescription: SSL/TLS handshake failure on payment gateway endpoint\nRecent change: Upgraded payment gateway client library last week\nRoot cause: Root cause: SSL certificate expired on payment gateway vendor endpoint.\nResolution: Resolution: Renewed certificate with vendor and updated client certificate configuration.\nFailed attempt: Failed attempt: Restarting payment service (certificate issue unrelated to service health).\nLesson: Lesson: Set up automated certificate expiry monitoring with 30-day alerts for Payment API.",
+      "DocumentId": "INC-1001",
+      "Tags": [
+        "payment-api",
+        "ssl",
+        "certificate",
+        "critical"
+      ],
+      "CreatedAt": "2026-09-28T18:09:40.2102872Z"
+    },
+    {
+      "Id": "c626dd9d-7666-447c-b99a-e681b1bb35df",
+      "Content": "Incident INC-1002 on Authentication API (Production): 401 Unauthorized Bulk Failures.\nSeverity: Critical.\nDescription: Widespread authentication failures across all services\nRecent change: Rotated JWT signing keys as part of quarterly security review\nRoot cause: Root cause: JWT signing key rotation deployed without updating key verification configuration on dependent services.\nResolution: Resolution: Updated key verification configuration on all consumer services and performed rolling restart.\nFailed attempt: Failed attempt: Reverting authentication service (keys were correct; consumers had stale key reference).\nLesson: Lesson: JWT key rotation requires coordinated deployment with all consumers. Use key versioning and overlap periods.",
+      "DocumentId": "INC-1002",
+      "Tags": [
+        "auth-api",
+        "jwt",
+        "authentication",
+        "key-rotation"
+      ],
+      "CreatedAt": "2026-09-28T18:09:40.4478802Z"
+    },
+    {
+      "Id": "be25286c-8f10-454b-a504-3a8de569acc1",
+      "Content": "Incident INC-1003 on Notification Service (Production): Message Delivery Failure.\nSeverity: High.\nDescription: Email and SMS notifications not being delivered\nRecent change: Deployed new Kubernetes node pool for notification workers\nRoot cause: Root cause: Queue consumer pods crashed due to missing environment variable in new node pool configuration.\nResolution: Resolution: Added missing SMTP_HOST environment variable to pod spec and redeployed.\nFailed attempt: Failed attempt: Restarting queue consumers without fixing environment (pods kept crashing).\nLesson: Lesson: Validate all required environment variables in deployment pipeline before rollout.",
+      "DocumentId": "INC-1003",
+      "Tags": [
+        "notification",
+        "queue",
+        "consumer",
+        "kubernetes"
+      ],
+      "CreatedAt": "2026-09-28T18:09:40.6669424Z"
+    },
+    {
+      "Id": "d97adb65-ff6f-4ca4-8d44-b57432f770b6",
+      "Content": "Incident INC-1004 on Order Service (Production): High Latency.\nSeverity: High.\nDescription: Order lookup latency spiked from 50ms to 8000ms\nRecent change: Ran database migration adding order history archive table\nRoot cause: Root cause: Database migration added archive table but removed index on orders.customer_id causing full table scans.\nResolution: Resolution: Recreated index concurrently: CREATE INDEX CONCURRENTLY idx_orders_customer_id ON orders(customer_id).\nFailed attempt: Failed attempt: Scaling up Order Service replicas (bottleneck was DB query, not compute).\nLesson: Lesson: Always include index verification in migration scripts for high-traffic tables.",
+      "DocumentId": "INC-1004",
+      "Tags": [
+        "order-service",
+        "database",
+        "index",
+        "latency",
+        "migration"
+      ],
+      "CreatedAt": "2026-09-28T18:09:40.8676796Z"
+    },
+    {
+      "Id": "c21b90a1-ba35-435b-b2b5-4c468705b416",
+      "Content": "Incident INC-1005 on Redis Cache (Production): Connection Timeout.\nSeverity: High.\nDescription: Redis connection timeouts across all services\nRecent change: Increased session TTL from 2 hours to 24 hours for improved UX\nRoot cause: Root cause: Redis memory exhausted due to TTL increase causing too many cached sessions to accumulate simultaneously.\nResolution: Resolution: Set maxmemory policy to allkeys-lru and evicted stale data. Reduced session TTL to 4 hours.\nFailed attempt: Failed attempt: Restarting Redis (data loss without maxmemory policy set would have caused cache stampede).\nLesson: Lesson: Always set Redis maxmemory and eviction policy. Monitor memory utilization when changing TTLs.",
+      "DocumentId": "INC-1005",
+      "Tags": [
+        "redis",
+        "cache",
+        "memory",
+        "oom",
+        "timeout"
+      ],
+      "CreatedAt": "2026-09-28T18:09:41.0839727Z"
+    },
+    {
+      "Id": "ec46de8e-af6b-48fe-8f4f-0a0529f94120",
+      "Content": "Incident INC-1006 on API Gateway (Production): 504 Gateway Timeout.\nSeverity: Critical.\nDescription: All API calls timing out through the gateway\nRecent change: Ran marketing campaign causing 10x traffic spike\nRoot cause: Root cause: API Gateway upstream timeout set too low (5s) for upstream services under high load. Services were responding but slowly.\nResolution: Resolution: Increased API Gateway upstream timeout to 30s and added circuit breaker rules. Scaled up upstream services.\nFailed attempt: Failed attempt: Restarting API Gateway (issue was timeout config, not gateway health).\nLesson: Lesson: API Gateway timeouts should be tuned based on upstream p99 latency under load, not p50.",
+      "DocumentId": "INC-1006",
+      "Tags": [
+        "api-gateway",
+        "timeout",
+        "504",
+        "circuit-breaker",
+        "traffic"
+      ],
+      "CreatedAt": "2026-09-28T18:09:41.2859614Z"
+    },
+    {
+      "Id": "3dc77cc8-5cff-4fbd-a2c8-22b0a727cfbe",
+      "Content": "Incident INC-1007 on User API (Production): 429 Too Many Requests.\nSeverity: Medium.\nDescription: Users unable to complete sign-up flow\nRecent change: Ran targeted email campaign driving 50k new sign-up attempts\nRoot cause: Root cause: Rate limiter configured at 100 req/min per IP blocked legitimate users behind shared NAT/proxy.\nResolution: Resolution: Switched rate limiting to per-account rather than per-IP and increased global limit.\nFailed attempt: Failed attempt: Disabling rate limiter entirely (would have allowed bot attacks).\nLesson: Lesson: Rate limiting on shared IPs blocks legitimate users. Use account-level or token-bucket per user.",
+      "DocumentId": "INC-1007",
+      "Tags": [
+        "user-api",
+        "rate-limiting",
+        "429",
+        "signup"
+      ],
+      "CreatedAt": "2026-09-28T18:09:41.5009476Z"
+    },
+    {
+      "Id": "f46648a5-d909-49f9-9c2e-9176bf80f40d",
+      "Content": "Incident INC-1008 on Search Service (Production): Out of Memory.\nSeverity: High.\nDescription: Search service pods OOMKilled repeatedly\nRecent change: Updated search index to include product descriptions (larger documents)\nRoot cause: Root cause: Lucene search index buffer not released after query, causing memory leak with larger documents.\nResolution: Resolution: Added query-level buffer limit and upgraded search library version that fixed the leak.\nFailed attempt: Failed attempt: Increasing pod memory limit (only delayed the OOM crash).\nLesson: Lesson: Memory leaks require root cause fix, not just resource limit increases. Profile memory on library upgrades.",
+      "DocumentId": "INC-1008",
+      "Tags": [
+        "search",
+        "oom",
+        "memory-leak",
+        "lucene"
+      ],
+      "CreatedAt": "2026-09-28T18:09:41.7160359Z"
+    },
+    {
+      "Id": "42e3b678-e2aa-4074-844e-f1b24707e854",
+      "Content": "Incident INC-1009 on PostgreSQL Database (Production): Max Connections Exceeded.\nSeverity: Critical.\nDescription: Database refusing new connections\nRecent change: Deployed 5 new microservices all connecting to the main database\nRoot cause: Root cause: Total connection pool across all services exceeded PostgreSQL max_connections (100) after new deployments.\nResolution: Resolution: Deployed PgBouncer connection pooler. Reduced per-service pool size. Increased max_connections to 200.\nFailed attempt: Failed attempt: Restarting PostgreSQL (connections reestablished immediately).\nLesson: Lesson: Use a connection pooler (PgBouncer) for multi-service architectures. Set max_connections budget per service.",
+      "DocumentId": "INC-1009",
+      "Tags": [
+        "postgresql",
+        "connections",
+        "pgbouncer",
+        "database"
+      ],
+      "CreatedAt": "2026-09-28T18:09:41.9186518Z"
+    },
+    {
+      "Id": "b321231c-3f40-4a6e-aa6f-8bfd2bd541f1",
+      "Content": "Incident INC-1010 on File Storage Service (Production): Disk Full Error.\nSeverity: High.\nDescription: File uploads failing with 500 errors\nRecent change: Temporarily disabled cleanup job to avoid touching production data during migration\nRoot cause: Root cause: Scheduled cleanup job was disabled and disk reached 100% capacity with temporary upload files.\nResolution: Resolution: Manually cleaned temporary files, re-enabled cleanup job, added disk space alert at 80%.\nFailed attempt: Failed attempt: Increasing instance size (disk was 100% full, new capacity still needed cleanup).\nLesson: Lesson: Never disable cleanup jobs without a time-boxed plan and disk space monitoring.",
+      "DocumentId": "INC-1010",
+      "Tags": [
+        "file-storage",
+        "disk",
+        "cleanup",
+        "storage"
+      ],
+      "CreatedAt": "2026-09-28T18:09:42.1201032Z"
+    },
+    {
+      "Id": "bb547422-748a-4538-a780-5e76c1fdf167",
+      "Content": "Incident INC-1011 on Order Service (Staging): Database Deadlock.\nSeverity: Medium.\nDescription: Order creation failing intermittently\nRecent change: Refactored order transaction to update inventory and payments simultaneously\nRoot cause: Root cause: Concurrent transactions acquiring locks in different order (inventory then payment vs payment then inventory) caused deadlocks.\nResolution: Resolution: Enforced consistent lock acquisition order: always inventory first, then payment.\nFailed attempt: Failed attempt: Increasing transaction timeout (deadlocks retried and failed again).\nLesson: Lesson: Always acquire database locks in consistent order across all transactions to prevent deadlocks.",
+      "DocumentId": "INC-1011",
+      "Tags": [
+        "order-service",
+        "deadlock",
+        "database",
+        "transaction"
+      ],
+      "CreatedAt": "2026-09-28T18:09:42.3367475Z"
+    },
+    {
+      "Id": "de799d53-7f5e-463c-97a8-9e107e109e4c",
+      "Content": "Incident INC-1012 on Authentication API (Production): Stale Session Tokens.\nSeverity: Medium.\nDescription: Users still accessing system after account deactivation\nRecent change: Switched from stateful sessions to stateless JWT tokens\nRoot cause: Root cause: JWT tokens are stateless; no token revocation mechanism. Deactivated users retained valid tokens.\nResolution: Resolution: Implemented token blacklist in Redis and added revocation check on each request.\nFailed attempt: Failed attempt: Setting very short JWT expiry (1 minute) - degraded UX too severely.\nLesson: Lesson: Stateless JWTs require revocation mechanism for account deactivation/logout scenarios.",
+      "DocumentId": "INC-1012",
+      "Tags": [
+        "auth-api",
+        "jwt",
+        "token",
+        "revocation",
+        "security"
+      ],
+      "CreatedAt": "2026-09-28T18:09:42.5401275Z"
+    },
+    {
+      "Id": "55e55051-2b73-4429-8941-ff46e87eeb56",
+      "Content": "Incident INC-1013 on Search Service (Production): Empty Search Results.\nSeverity: High.\nDescription: All search queries returning 0 results\nRecent change: Ran search index rebuild over the weekend\nRoot cause: Root cause: Index rebuild failed midway due to storage timeout, leaving a corrupted partial index that was swapped live.\nResolution: Resolution: Rolled back to previous index snapshot and implemented index rebuild validation before swap.\nFailed attempt: Failed attempt: Reindexing again without validation (same failure would occur).\nLesson: Lesson: Always validate index rebuild completion before swapping. Implement blue-green index deployment.",
+      "DocumentId": "INC-1013",
+      "Tags": [
+        "search",
+        "index",
+        "corruption",
+        "rebuild"
+      ],
+      "CreatedAt": "2026-09-28T18:09:42.7582102Z"
+    },
+    {
+      "Id": "854dc35f-4c9b-4bc9-89a2-07f503953ea0",
+      "Content": "Incident INC-1014 on Notification Service (Production): Email Delivery Delay.\nSeverity: Medium.\nDescription: Transactional emails delayed by 4\u002B hours\nRecent change: Increased email notification frequency for all users (daily digest changed to hourly)\nRoot cause: Root cause: SendGrid rate limit exceeded due to 10x increase in email volume from frequency change.\nResolution: Resolution: Implemented exponential backoff retry with queue prioritization. Upgraded SendGrid plan.\nFailed attempt: Failed attempt: Simply retrying at maximum rate (caused further rate limiting).\nLesson: Lesson: Third-party API rate limits must be calculated before changing notification frequency.",
+      "DocumentId": "INC-1014",
+      "Tags": [
+        "notification",
+        "email",
+        "rate-limit",
+        "sendgrid"
+      ],
+      "CreatedAt": "2026-09-28T18:09:42.9732948Z"
+    },
+    {
+      "Id": "0fdf89c1-f1a4-471d-80df-375d1e0fe108",
+      "Content": "Incident INC-1015 on API Gateway (Production): 503 Service Unavailable.\nSeverity: Critical.\nDescription: All traffic returning 503 for specific API version\nRecent change: Deployed new API version routing rules to API Gateway\nRoot cause: Root cause: Routing rule typo sent /api/v2/* traffic to /dev/null upstream instead of v2 service cluster.\nResolution: Resolution: Fixed routing rule and redeployed. Traffic restored in 2 minutes.\nFailed attempt: Failed attempt: Restarting v2 service instances (routing was sending traffic to wrong target).\nLesson: Lesson: API Gateway routing changes must be tested in staging with traffic simulation before production.",
+      "DocumentId": "INC-1015",
+      "Tags": [
+        "api-gateway",
+        "routing",
+        "503",
+        "configuration"
+      ],
+      "CreatedAt": "2026-09-28T18:09:43.1880091Z"
+    },
+    {
+      "Id": "30ed8e3d-b603-47ec-9182-2343986abbf4",
+      "Content": "Incident INC-1016 on User API (Production): 500 Internal Server Error.\nSeverity: High.\nDescription: User profile updates failing\nRecent change: Added new required field \u0027preferred_timezone\u0027 to user profile schema\nRoot cause: Root cause: New required column added without default value. Existing users missing the field cause NOT NULL constraint violations.\nResolution: Resolution: Added default value (\u0027UTC\u0027) to column and backfilled existing records.\nFailed attempt: Failed attempt: Rolling back API code (DB schema was already migrated in production).\nLesson: Lesson: Never add NOT NULL columns without default values. Use nullable or backfill strategy.",
+      "DocumentId": "INC-1016",
+      "Tags": [
+        "user-api",
+        "schema",
+        "migration",
+        "null-constraint"
+      ],
+      "CreatedAt": "2026-09-28T18:09:43.3907635Z"
+    },
+    {
+      "Id": "8db3950c-d555-4883-9ef9-5a247eb468c4",
+      "Content": "Incident INC-1017 on Redis Cache (Production): Cache Miss Storm.\nSeverity: Medium.\nDescription: Cache hit rate dropped from 95% to 12%\nRecent change: Deployed application update with new cache key format\nRoot cause: Root cause: New cache key format invalidated all existing cached data simultaneously causing cache stampede.\nResolution: Resolution: Implemented cache warming with gradual migration period and dual-key support.\nFailed attempt: Failed attempt: Flushing old cache manually (accelerated stampede rather than mitigating it).\nLesson: Lesson: Cache key format changes need migration strategy. Use versioned keys with warm-up period.",
+      "DocumentId": "INC-1017",
+      "Tags": [
+        "redis",
+        "cache",
+        "stampede",
+        "key-migration"
+      ],
+      "CreatedAt": "2026-09-28T18:09:43.5960924Z"
+    },
+    {
+      "Id": "ad654482-e7ca-4fe6-88f1-4a412905f644",
+      "Content": "Incident INC-1018 on PostgreSQL Database (Production): Slow Queries.\nSeverity: Medium.\nDescription: Query performance degraded by 300% on high-traffic tables\nRecent change: Disabled autovacuum during peak hours to reduce I/O\nRoot cause: Root cause: Table bloat from disabled autovacuum. TOAST entries accumulated, causing large sequential scans.\nResolution: Resolution: Re-enabled autovacuum, ran manual VACUUM ANALYZE on affected tables. Created vacuum schedule.\nFailed attempt: Failed attempt: Adding indexes (did not help because statistics were stale).\nLesson: Lesson: Never disable autovacuum in production. Use cost-based autovacuum settings to minimize impact.",
+      "DocumentId": "INC-1018",
+      "Tags": [
+        "postgresql",
+        "vacuum",
+        "bloat",
+        "performance"
+      ],
+      "CreatedAt": "2026-09-28T18:09:43.8117649Z"
+    },
+    {
+      "Id": "650ada4f-d85a-4ce3-8fc7-5192e520f7cf",
+      "Content": "Incident INC-1019 on File Storage Service (Production): 403 Forbidden.\nSeverity: Medium.\nDescription: User unable to download their files\nRecent change: Migrated file storage to new S3 bucket for cost optimization\nRoot cause: Root cause: New bucket IAM policy did not replicate user-level ACLs from old bucket.\nResolution: Resolution: Applied user-specific ACL migration script and updated IAM policy to include user-scoped permissions.\nFailed attempt: Failed attempt: Making bucket public (unacceptable security risk).\nLesson: Lesson: S3 bucket migrations must include ACL validation step. Never sacrifice security for quick fixes.",
+      "DocumentId": "INC-1019",
+      "Tags": [
+        "file-storage",
+        "s3",
+        "iam",
+        "permissions",
+        "403"
+      ],
+      "CreatedAt": "2026-09-28T18:09:44.0280331Z"
+    },
+    {
+      "Id": "5c10b7b4-c759-46c2-acac-4d6d9c5a3ce1",
+      "Content": "Incident INC-1020 on Order Service (Production): Order Processing Delay.\nSeverity: High.\nDescription: Orders stuck in processing state for 30\u002B minutes\nRecent change: Deployed order processing service update during business hours\nRoot cause: Root cause: Rolling deployment caused temporary queue consumer gap where orders queued but were not processed.\nResolution: Resolution: Drained queue with emergency consumer instances. Implemented zero-downtime deployment with overlapping consumers.\nFailed attempt: Failed attempt: Restarting just the failed instances (missed that queue had backlog from deployment gap).\nLesson: Lesson: Stateful queue consumers need zero-downtime deployment strategy with backlog monitoring.",
+      "DocumentId": "INC-1020",
+      "Tags": [
+        "order-service",
+        "queue",
+        "deployment",
+        "backlog"
+      ],
+      "CreatedAt": "2026-09-28T18:09:44.2443629Z"
+    },
+    {
+      "Id": "1e52d51b-66dc-42d2-af28-7ed3c42d2585",
+      "Content": "Incident INC-1021 on Payment API (Production): Payment Gateway Rejection.\nSeverity: Critical.\nDescription: All payment transactions rejected by gateway\nRecent change: Upgraded payment gateway SDK to latest version\nRoot cause: Root cause: New SDK version changed certificate pinning hashes. Production environment had old pinned certificate hashes.\nResolution: Resolution: Updated certificate pinning configuration with new hashes from gateway documentation.\nFailed attempt: Failed attempt: Downgrading SDK (caused different compatibility errors).\nLesson: Lesson: Read SDK upgrade notes for security configuration changes. Test payment flows end-to-end in staging.",
+      "DocumentId": "INC-1021",
+      "Tags": [
+        "payment-api",
+        "certificate-pinning",
+        "sdk",
+        "upgrade"
+      ],
+      "CreatedAt": "2026-09-28T18:09:44.4612517Z"
+    },
+    {
+      "Id": "57cb7e78-0fe6-4e21-b0bd-0d4bd47b0fde",
+      "Content": "Incident INC-1022 on Search Service (Production): High CPU Utilization.\nSeverity: High.\nDescription: Search latency at 15\u002B seconds, CPU at 100%\nRecent change: Added fuzzy search with Levenshtein distance across all string fields\nRoot cause: Root cause: Fuzzy matching on all fields without index support caused O(n*m) computation on every query.\nResolution: Resolution: Limited fuzzy search to name/title fields only, implemented field-level result boosting.\nFailed attempt: Failed attempt: Horizontal scaling (CPU was still maxed per instance).\nLesson: Lesson: Fuzzy/approximate matching is expensive. Apply only to indexed fields and limit distance threshold.",
+      "DocumentId": "INC-1022",
+      "Tags": [
+        "search",
+        "cpu",
+        "performance",
+        "fuzzy-search"
+      ],
+      "CreatedAt": "2026-09-28T18:09:44.6657321Z"
+    },
+    {
+      "Id": "44098536-ae99-44b7-a6a2-91d6a54b1f2e",
+      "Content": "Incident INC-1023 on Authentication API (Production): Suspicious Authentication Activity.\nSeverity: Critical.\nDescription: Multiple accounts accessed from impossible geographic locations\nRecent change: None - detected during security audit\nRoot cause: Root cause: JWT tokens stolen from insecure client-side storage (localStorage) and used from different locations.\nResolution: Resolution: Migrated tokens to httpOnly cookies, implemented IP binding for admin sessions, added device fingerprinting.\nFailed attempt: Failed attempt: IP-based blocking (attackers used VPN to match original IP).\nLesson: Lesson: Never store JWTs in localStorage. Use httpOnly cookies. Implement behavioral anomaly detection.",
+      "DocumentId": "INC-1023",
+      "Tags": [
+        "auth-api",
+        "security",
+        "jwt",
+        "replay-attack",
+        "token-theft"
+      ],
+      "CreatedAt": "2026-09-28T18:09:44.8817327Z"
+    },
+    {
+      "Id": "8de9ee08-d8a8-4eca-9639-4543caca3495",
+      "Content": "Incident INC-1024 on Notification Service (Production): Push Notification Failure.\nSeverity: Medium.\nDescription: Mobile push notifications not delivered\nRecent change: Firebase Cloud Messaging (FCM) platform had minor service disruption\nRoot cause: Root cause: FCM service disruption caused delivery failures. No fallback notification mechanism existed.\nResolution: Resolution: Implemented SMS fallback for critical notifications when push delivery fails.\nFailed attempt: Failed attempt: Retrying immediately (FCM still down, queue grew further).\nLesson: Lesson: Implement fallback delivery channels for critical notifications. Monitor third-party provider status pages.",
+      "DocumentId": "INC-1024",
+      "Tags": [
+        "notification",
+        "push",
+        "fcm",
+        "dependency",
+        "fallback"
+      ],
+      "CreatedAt": "2026-09-28T18:09:45.0858091Z"
+    },
+    {
+      "Id": "08fa81c4-f209-4fd6-ae79-e38660ae472b",
+      "Content": "Incident INC-1025 on API Gateway (Production): Mixed Content Errors.\nSeverity: High.\nDescription: Web clients reporting mixed content warnings blocking resources\nRecent change: Added new API endpoints served from a microservice not behind the gateway\nRoot cause: Root cause: New microservice exposed HTTP endpoints directly without going through SSL-terminating API Gateway.\nResolution: Resolution: Routed all microservice traffic through API Gateway. Enforced HTTPS-only policy.\nFailed attempt: Failed attempt: Setting HSTS header (did not fix existing HTTP endpoint exposure).\nLesson: Lesson: All service endpoints must be routed through API Gateway. Enforce TLS at gateway level, never bypass.",
+      "DocumentId": "INC-1025",
+      "Tags": [
+        "api-gateway",
+        "ssl",
+        "tls",
+        "https",
+        "security"
+      ],
+      "CreatedAt": "2026-09-28T18:09:45.2998283Z"
+    },
+    {
+      "Id": "f3e49bee-e719-4f9f-b3ee-364e6746dd9d",
+      "Content": "Incident INC-1001 on Payment API (Production): SSL Certificate Error.\nSeverity: Critical.\nDescription: SSL/TLS handshake failure on payment gateway endpoint\nRecent change: Upgraded payment gateway client library last week\nRoot cause: Root cause: SSL certificate expired on payment gateway vendor endpoint.\nResolution: Resolution: Renewed certificate with vendor and updated client certificate configuration.\nFailed attempt: Failed attempt: Restarting payment service (certificate issue unrelated to service health).\nLesson: Lesson: Set up automated certificate expiry monitoring with 30-day alerts for Payment API.",
+      "DocumentId": "INC-1001",
+      "Tags": [
+        "payment-api",
+        "ssl",
+        "certificate",
+        "critical"
+      ],
+      "CreatedAt": "2026-09-28T19:13:31.5941844Z"
+    },
+    {
+      "Id": "4d67eae1-afa4-484f-902d-7b7148b773e2",
+      "Content": "Incident INC-1002 on Authentication API (Production): 401 Unauthorized Bulk Failures.\nSeverity: Critical.\nDescription: Widespread authentication failures across all services\nRecent change: Rotated JWT signing keys as part of quarterly security review\nRoot cause: Root cause: JWT signing key rotation deployed without updating key verification configuration on dependent services.\nResolution: Resolution: Updated key verification configuration on all consumer services and performed rolling restart.\nFailed attempt: Failed attempt: Reverting authentication service (keys were correct; consumers had stale key reference).\nLesson: Lesson: JWT key rotation requires coordinated deployment with all consumers. Use key versioning and overlap periods.",
+      "DocumentId": "INC-1002",
+      "Tags": [
+        "auth-api",
+        "jwt",
+        "authentication",
+        "key-rotation"
+      ],
+      "CreatedAt": "2026-09-28T19:13:31.8241948Z"
+    },
+    {
+      "Id": "47ba8807-dada-46be-9530-4b4dc15edc17",
+      "Content": "Incident INC-1003 on Notification Service (Production): Message Delivery Failure.\nSeverity: High.\nDescription: Email and SMS notifications not being delivered\nRecent change: Deployed new Kubernetes node pool for notification workers\nRoot cause: Root cause: Queue consumer pods crashed due to missing environment variable in new node pool configuration.\nResolution: Resolution: Added missing SMTP_HOST environment variable to pod spec and redeployed.\nFailed attempt: Failed attempt: Restarting queue consumers without fixing environment (pods kept crashing).\nLesson: Lesson: Validate all required environment variables in deployment pipeline before rollout.",
+      "DocumentId": "INC-1003",
+      "Tags": [
+        "notification",
+        "queue",
+        "consumer",
+        "kubernetes"
+      ],
+      "CreatedAt": "2026-09-28T19:13:32.0380717Z"
+    },
+    {
+      "Id": "909708f2-114c-4e35-8f7b-2421a31ec6f6",
+      "Content": "Incident INC-1004 on Order Service (Production): High Latency.\nSeverity: High.\nDescription: Order lookup latency spiked from 50ms to 8000ms\nRecent change: Ran database migration adding order history archive table\nRoot cause: Root cause: Database migration added archive table but removed index on orders.customer_id causing full table scans.\nResolution: Resolution: Recreated index concurrently: CREATE INDEX CONCURRENTLY idx_orders_customer_id ON orders(customer_id).\nFailed attempt: Failed attempt: Scaling up Order Service replicas (bottleneck was DB query, not compute).\nLesson: Lesson: Always include index verification in migration scripts for high-traffic tables.",
+      "DocumentId": "INC-1004",
+      "Tags": [
+        "order-service",
+        "database",
+        "index",
+        "latency",
+        "migration"
+      ],
+      "CreatedAt": "2026-09-28T19:13:32.2538927Z"
+    },
+    {
+      "Id": "5f939e19-18b9-4527-a69e-13c5a4bef4f1",
+      "Content": "Incident INC-1005 on Redis Cache (Production): Connection Timeout.\nSeverity: High.\nDescription: Redis connection timeouts across all services\nRecent change: Increased session TTL from 2 hours to 24 hours for improved UX\nRoot cause: Root cause: Redis memory exhausted due to TTL increase causing too many cached sessions to accumulate simultaneously.\nResolution: Resolution: Set maxmemory policy to allkeys-lru and evicted stale data. Reduced session TTL to 4 hours.\nFailed attempt: Failed attempt: Restarting Redis (data loss without maxmemory policy set would have caused cache stampede).\nLesson: Lesson: Always set Redis maxmemory and eviction policy. Monitor memory utilization when changing TTLs.",
+      "DocumentId": "INC-1005",
+      "Tags": [
+        "redis",
+        "cache",
+        "memory",
+        "oom",
+        "timeout"
+      ],
+      "CreatedAt": "2026-09-28T19:13:32.4731643Z"
+    },
+    {
+      "Id": "491d6227-4607-4fa4-8523-a1b515ed9b5f",
+      "Content": "Incident INC-1006 on API Gateway (Production): 504 Gateway Timeout.\nSeverity: Critical.\nDescription: All API calls timing out through the gateway\nRecent change: Ran marketing campaign causing 10x traffic spike\nRoot cause: Root cause: API Gateway upstream timeout set too low (5s) for upstream services under high load. Services were responding but slowly.\nResolution: Resolution: Increased API Gateway upstream timeout to 30s and added circuit breaker rules. Scaled up upstream services.\nFailed attempt: Failed attempt: Restarting API Gateway (issue was timeout config, not gateway health).\nLesson: Lesson: API Gateway timeouts should be tuned based on upstream p99 latency under load, not p50.",
+      "DocumentId": "INC-1006",
+      "Tags": [
+        "api-gateway",
+        "timeout",
+        "504",
+        "circuit-breaker",
+        "traffic"
+      ],
+      "CreatedAt": "2026-09-28T19:13:32.6906009Z"
+    },
+    {
+      "Id": "28376a7b-4fa9-41b3-ba9d-6d2cadc705b3",
+      "Content": "Incident INC-1007 on User API (Production): 429 Too Many Requests.\nSeverity: Medium.\nDescription: Users unable to complete sign-up flow\nRecent change: Ran targeted email campaign driving 50k new sign-up attempts\nRoot cause: Root cause: Rate limiter configured at 100 req/min per IP blocked legitimate users behind shared NAT/proxy.\nResolution: Resolution: Switched rate limiting to per-account rather than per-IP and increased global limit.\nFailed attempt: Failed attempt: Disabling rate limiter entirely (would have allowed bot attacks).\nLesson: Lesson: Rate limiting on shared IPs blocks legitimate users. Use account-level or token-bucket per user.",
+      "DocumentId": "INC-1007",
+      "Tags": [
+        "user-api",
+        "rate-limiting",
+        "429",
+        "signup"
+      ],
+      "CreatedAt": "2026-09-28T19:13:32.9093469Z"
+    },
+    {
+      "Id": "597bfd6b-098b-4a9d-9765-0503f73cd1e7",
+      "Content": "Incident INC-1008 on Search Service (Production): Out of Memory.\nSeverity: High.\nDescription: Search service pods OOMKilled repeatedly\nRecent change: Updated search index to include product descriptions (larger documents)\nRoot cause: Root cause: Lucene search index buffer not released after query, causing memory leak with larger documents.\nResolution: Resolution: Added query-level buffer limit and upgraded search library version that fixed the leak.\nFailed attempt: Failed attempt: Increasing pod memory limit (only delayed the OOM crash).\nLesson: Lesson: Memory leaks require root cause fix, not just resource limit increases. Profile memory on library upgrades.",
+      "DocumentId": "INC-1008",
+      "Tags": [
+        "search",
+        "oom",
+        "memory-leak",
+        "lucene"
+      ],
+      "CreatedAt": "2026-09-28T19:13:33.1249335Z"
+    },
+    {
+      "Id": "3d588fd0-9297-4e59-a97e-1176ffd3043c",
+      "Content": "Incident INC-1009 on PostgreSQL Database (Production): Max Connections Exceeded.\nSeverity: Critical.\nDescription: Database refusing new connections\nRecent change: Deployed 5 new microservices all connecting to the main database\nRoot cause: Root cause: Total connection pool across all services exceeded PostgreSQL max_connections (100) after new deployments.\nResolution: Resolution: Deployed PgBouncer connection pooler. Reduced per-service pool size. Increased max_connections to 200.\nFailed attempt: Failed attempt: Restarting PostgreSQL (connections reestablished immediately).\nLesson: Lesson: Use a connection pooler (PgBouncer) for multi-service architectures. Set max_connections budget per service.",
+      "DocumentId": "INC-1009",
+      "Tags": [
+        "postgresql",
+        "connections",
+        "pgbouncer",
+        "database"
+      ],
+      "CreatedAt": "2026-09-28T19:13:33.3501779Z"
+    },
+    {
+      "Id": "fe26f284-51d6-43d8-8e6b-023a8681a787",
+      "Content": "Incident INC-1010 on File Storage Service (Production): Disk Full Error.\nSeverity: High.\nDescription: File uploads failing with 500 errors\nRecent change: Temporarily disabled cleanup job to avoid touching production data during migration\nRoot cause: Root cause: Scheduled cleanup job was disabled and disk reached 100% capacity with temporary upload files.\nResolution: Resolution: Manually cleaned temporary files, re-enabled cleanup job, added disk space alert at 80%.\nFailed attempt: Failed attempt: Increasing instance size (disk was 100% full, new capacity still needed cleanup).\nLesson: Lesson: Never disable cleanup jobs without a time-boxed plan and disk space monitoring.",
+      "DocumentId": "INC-1010",
+      "Tags": [
+        "file-storage",
+        "disk",
+        "cleanup",
+        "storage"
+      ],
+      "CreatedAt": "2026-09-28T19:13:33.5769543Z"
+    },
+    {
+      "Id": "2fc80d33-51e7-4f99-93c0-43cf3bdae377",
+      "Content": "Incident INC-1011 on Order Service (Staging): Database Deadlock.\nSeverity: Medium.\nDescription: Order creation failing intermittently\nRecent change: Refactored order transaction to update inventory and payments simultaneously\nRoot cause: Root cause: Concurrent transactions acquiring locks in different order (inventory then payment vs payment then inventory) caused deadlocks.\nResolution: Resolution: Enforced consistent lock acquisition order: always inventory first, then payment.\nFailed attempt: Failed attempt: Increasing transaction timeout (deadlocks retried and failed again).\nLesson: Lesson: Always acquire database locks in consistent order across all transactions to prevent deadlocks.",
+      "DocumentId": "INC-1011",
+      "Tags": [
+        "order-service",
+        "deadlock",
+        "database",
+        "transaction"
+      ],
+      "CreatedAt": "2026-09-28T19:13:33.7940515Z"
+    },
+    {
+      "Id": "21f1ac36-64dd-436a-aab4-2451133bcb5e",
+      "Content": "Incident INC-1012 on Authentication API (Production): Stale Session Tokens.\nSeverity: Medium.\nDescription: Users still accessing system after account deactivation\nRecent change: Switched from stateful sessions to stateless JWT tokens\nRoot cause: Root cause: JWT tokens are stateless; no token revocation mechanism. Deactivated users retained valid tokens.\nResolution: Resolution: Implemented token blacklist in Redis and added revocation check on each request.\nFailed attempt: Failed attempt: Setting very short JWT expiry (1 minute) - degraded UX too severely.\nLesson: Lesson: Stateless JWTs require revocation mechanism for account deactivation/logout scenarios.",
+      "DocumentId": "INC-1012",
+      "Tags": [
+        "auth-api",
+        "jwt",
+        "token",
+        "revocation",
+        "security"
+      ],
+      "CreatedAt": "2026-09-28T19:13:34.0127032Z"
+    },
+    {
+      "Id": "d2c0da9b-283c-4af1-ae2c-34f72dc97d23",
+      "Content": "Incident INC-1013 on Search Service (Production): Empty Search Results.\nSeverity: High.\nDescription: All search queries returning 0 results\nRecent change: Ran search index rebuild over the weekend\nRoot cause: Root cause: Index rebuild failed midway due to storage timeout, leaving a corrupted partial index that was swapped live.\nResolution: Resolution: Rolled back to previous index snapshot and implemented index rebuild validation before swap.\nFailed attempt: Failed attempt: Reindexing again without validation (same failure would occur).\nLesson: Lesson: Always validate index rebuild completion before swapping. Implement blue-green index deployment.",
+      "DocumentId": "INC-1013",
+      "Tags": [
+        "search",
+        "index",
+        "corruption",
+        "rebuild"
+      ],
+      "CreatedAt": "2026-09-28T19:13:34.2290184Z"
+    },
+    {
+      "Id": "69f55492-29e8-48e5-9577-7a284a72a35e",
+      "Content": "Incident INC-1014 on Notification Service (Production): Email Delivery Delay.\nSeverity: Medium.\nDescription: Transactional emails delayed by 4\u002B hours\nRecent change: Increased email notification frequency for all users (daily digest changed to hourly)\nRoot cause: Root cause: SendGrid rate limit exceeded due to 10x increase in email volume from frequency change.\nResolution: Resolution: Implemented exponential backoff retry with queue prioritization. Upgraded SendGrid plan.\nFailed attempt: Failed attempt: Simply retrying at maximum rate (caused further rate limiting).\nLesson: Lesson: Third-party API rate limits must be calculated before changing notification frequency.",
+      "DocumentId": "INC-1014",
+      "Tags": [
+        "notification",
+        "email",
+        "rate-limit",
+        "sendgrid"
+      ],
+      "CreatedAt": "2026-09-28T19:13:34.4330662Z"
+    },
+    {
+      "Id": "65194604-7481-47fd-9205-c9b6f148044b",
+      "Content": "Incident INC-1015 on API Gateway (Production): 503 Service Unavailable.\nSeverity: Critical.\nDescription: All traffic returning 503 for specific API version\nRecent change: Deployed new API version routing rules to API Gateway\nRoot cause: Root cause: Routing rule typo sent /api/v2/* traffic to /dev/null upstream instead of v2 service cluster.\nResolution: Resolution: Fixed routing rule and redeployed. Traffic restored in 2 minutes.\nFailed attempt: Failed attempt: Restarting v2 service instances (routing was sending traffic to wrong target).\nLesson: Lesson: API Gateway routing changes must be tested in staging with traffic simulation before production.",
+      "DocumentId": "INC-1015",
+      "Tags": [
+        "api-gateway",
+        "routing",
+        "503",
+        "configuration"
+      ],
+      "CreatedAt": "2026-09-28T19:13:34.6485309Z"
+    },
+    {
+      "Id": "e5aa3870-83c6-4a3b-a0f5-30e2e853109e",
+      "Content": "Incident INC-1016 on User API (Production): 500 Internal Server Error.\nSeverity: High.\nDescription: User profile updates failing\nRecent change: Added new required field \u0027preferred_timezone\u0027 to user profile schema\nRoot cause: Root cause: New required column added without default value. Existing users missing the field cause NOT NULL constraint violations.\nResolution: Resolution: Added default value (\u0027UTC\u0027) to column and backfilled existing records.\nFailed attempt: Failed attempt: Rolling back API code (DB schema was already migrated in production).\nLesson: Lesson: Never add NOT NULL columns without default values. Use nullable or backfill strategy.",
+      "DocumentId": "INC-1016",
+      "Tags": [
+        "user-api",
+        "schema",
+        "migration",
+        "null-constraint"
+      ],
+      "CreatedAt": "2026-09-28T19:13:34.867302Z"
+    },
+    {
+      "Id": "706f6ee2-f79b-4e3a-ba93-a7792dd1e5c1",
+      "Content": "Incident INC-1017 on Redis Cache (Production): Cache Miss Storm.\nSeverity: Medium.\nDescription: Cache hit rate dropped from 95% to 12%\nRecent change: Deployed application update with new cache key format\nRoot cause: Root cause: New cache key format invalidated all existing cached data simultaneously causing cache stampede.\nResolution: Resolution: Implemented cache warming with gradual migration period and dual-key support.\nFailed attempt: Failed attempt: Flushing old cache manually (accelerated stampede rather than mitigating it).\nLesson: Lesson: Cache key format changes need migration strategy. Use versioned keys with warm-up period.",
+      "DocumentId": "INC-1017",
+      "Tags": [
+        "redis",
+        "cache",
+        "stampede",
+        "key-migration"
+      ],
+      "CreatedAt": "2026-09-28T19:13:35.0811201Z"
+    },
+    {
+      "Id": "b48cb2ff-b9d3-43ad-a6c5-678a8278fad1",
+      "Content": "Incident INC-1018 on PostgreSQL Database (Production): Slow Queries.\nSeverity: Medium.\nDescription: Query performance degraded by 300% on high-traffic tables\nRecent change: Disabled autovacuum during peak hours to reduce I/O\nRoot cause: Root cause: Table bloat from disabled autovacuum. TOAST entries accumulated, causing large sequential scans.\nResolution: Resolution: Re-enabled autovacuum, ran manual VACUUM ANALYZE on affected tables. Created vacuum schedule.\nFailed attempt: Failed attempt: Adding indexes (did not help because statistics were stale).\nLesson: Lesson: Never disable autovacuum in production. Use cost-based autovacuum settings to minimize impact.",
+      "DocumentId": "INC-1018",
+      "Tags": [
+        "postgresql",
+        "vacuum",
+        "bloat",
+        "performance"
+      ],
+      "CreatedAt": "2026-09-28T19:13:35.2841031Z"
+    },
+    {
+      "Id": "e2eded7d-555d-4aa0-8d43-49fdb6523c6e",
+      "Content": "Incident INC-1019 on File Storage Service (Production): 403 Forbidden.\nSeverity: Medium.\nDescription: User unable to download their files\nRecent change: Migrated file storage to new S3 bucket for cost optimization\nRoot cause: Root cause: New bucket IAM policy did not replicate user-level ACLs from old bucket.\nResolution: Resolution: Applied user-specific ACL migration script and updated IAM policy to include user-scoped permissions.\nFailed attempt: Failed attempt: Making bucket public (unacceptable security risk).\nLesson: Lesson: S3 bucket migrations must include ACL validation step. Never sacrifice security for quick fixes.",
+      "DocumentId": "INC-1019",
+      "Tags": [
+        "file-storage",
+        "s3",
+        "iam",
+        "permissions",
+        "403"
+      ],
+      "CreatedAt": "2026-09-28T19:13:35.5002529Z"
+    },
+    {
+      "Id": "221f160c-60e0-4662-94a3-f8bea27dc28a",
+      "Content": "Incident INC-1020 on Order Service (Production): Order Processing Delay.\nSeverity: High.\nDescription: Orders stuck in processing state for 30\u002B minutes\nRecent change: Deployed order processing service update during business hours\nRoot cause: Root cause: Rolling deployment caused temporary queue consumer gap where orders queued but were not processed.\nResolution: Resolution: Drained queue with emergency consumer instances. Implemented zero-downtime deployment with overlapping consumers.\nFailed attempt: Failed attempt: Restarting just the failed instances (missed that queue had backlog from deployment gap).\nLesson: Lesson: Stateful queue consumers need zero-downtime deployment strategy with backlog monitoring.",
+      "DocumentId": "INC-1020",
+      "Tags": [
+        "order-service",
+        "queue",
+        "deployment",
+        "backlog"
+      ],
+      "CreatedAt": "2026-09-28T19:13:35.7184642Z"
+    },
+    {
+      "Id": "d20d2c85-c43e-44cf-afb2-0663f5fcc51e",
+      "Content": "Incident INC-1021 on Payment API (Production): Payment Gateway Rejection.\nSeverity: Critical.\nDescription: All payment transactions rejected by gateway\nRecent change: Upgraded payment gateway SDK to latest version\nRoot cause: Root cause: New SDK version changed certificate pinning hashes. Production environment had old pinned certificate hashes.\nResolution: Resolution: Updated certificate pinning configuration with new hashes from gateway documentation.\nFailed attempt: Failed attempt: Downgrading SDK (caused different compatibility errors).\nLesson: Lesson: Read SDK upgrade notes for security configuration changes. Test payment flows end-to-end in staging.",
+      "DocumentId": "INC-1021",
+      "Tags": [
+        "payment-api",
+        "certificate-pinning",
+        "sdk",
+        "upgrade"
+      ],
+      "CreatedAt": "2026-09-28T19:13:35.9356209Z"
+    },
+    {
+      "Id": "fa3481e0-a0fa-4e99-af45-787da4729fd1",
+      "Content": "Incident INC-1022 on Search Service (Production): High CPU Utilization.\nSeverity: High.\nDescription: Search latency at 15\u002B seconds, CPU at 100%\nRecent change: Added fuzzy search with Levenshtein distance across all string fields\nRoot cause: Root cause: Fuzzy matching on all fields without index support caused O(n*m) computation on every query.\nResolution: Resolution: Limited fuzzy search to name/title fields only, implemented field-level result boosting.\nFailed attempt: Failed attempt: Horizontal scaling (CPU was still maxed per instance).\nLesson: Lesson: Fuzzy/approximate matching is expensive. Apply only to indexed fields and limit distance threshold.",
+      "DocumentId": "INC-1022",
+      "Tags": [
+        "search",
+        "cpu",
+        "performance",
+        "fuzzy-search"
+      ],
+      "CreatedAt": "2026-09-28T19:13:36.1500556Z"
+    },
+    {
+      "Id": "cba3e1e2-70d0-4128-983a-1bf68a9abf2c",
+      "Content": "Incident INC-1023 on Authentication API (Production): Suspicious Authentication Activity.\nSeverity: Critical.\nDescription: Multiple accounts accessed from impossible geographic locations\nRecent change: None - detected during security audit\nRoot cause: Root cause: JWT tokens stolen from insecure client-side storage (localStorage) and used from different locations.\nResolution: Resolution: Migrated tokens to httpOnly cookies, implemented IP binding for admin sessions, added device fingerprinting.\nFailed attempt: Failed attempt: IP-based blocking (attackers used VPN to match original IP).\nLesson: Lesson: Never store JWTs in localStorage. Use httpOnly cookies. Implement behavioral anomaly detection.",
+      "DocumentId": "INC-1023",
+      "Tags": [
+        "auth-api",
+        "security",
+        "jwt",
+        "replay-attack",
+        "token-theft"
+      ],
+      "CreatedAt": "2026-09-28T19:13:36.3679434Z"
+    },
+    {
+      "Id": "91d23980-06d5-44a9-9e9c-52b57df48cb4",
+      "Content": "Incident INC-1024 on Notification Service (Production): Push Notification Failure.\nSeverity: Medium.\nDescription: Mobile push notifications not delivered\nRecent change: Firebase Cloud Messaging (FCM) platform had minor service disruption\nRoot cause: Root cause: FCM service disruption caused delivery failures. No fallback notification mechanism existed.\nResolution: Resolution: Implemented SMS fallback for critical notifications when push delivery fails.\nFailed attempt: Failed attempt: Retrying immediately (FCM still down, queue grew further).\nLesson: Lesson: Implement fallback delivery channels for critical notifications. Monitor third-party provider status pages.",
+      "DocumentId": "INC-1024",
+      "Tags": [
+        "notification",
+        "push",
+        "fcm",
+        "dependency",
+        "fallback"
+      ],
+      "CreatedAt": "2026-09-28T19:13:36.5853898Z"
+    },
+    {
+      "Id": "02b7cda1-c133-4363-bb81-6d7cf6f3ff1e",
+      "Content": "Incident INC-1025 on API Gateway (Production): Mixed Content Errors.\nSeverity: High.\nDescription: Web clients reporting mixed content warnings blocking resources\nRecent change: Added new API endpoints served from a microservice not behind the gateway\nRoot cause: Root cause: New microservice exposed HTTP endpoints directly without going through SSL-terminating API Gateway.\nResolution: Resolution: Routed all microservice traffic through API Gateway. Enforced HTTPS-only policy.\nFailed attempt: Failed attempt: Setting HSTS header (did not fix existing HTTP endpoint exposure).\nLesson: Lesson: All service endpoints must be routed through API Gateway. Enforce TLS at gateway level, never bypass.",
+      "DocumentId": "INC-1025",
+      "Tags": [
+        "api-gateway",
+        "ssl",
+        "tls",
+        "https",
+        "security"
+      ],
+      "CreatedAt": "2026-09-28T19:13:36.8118351Z"
+    },
+    {
+      "Id": "216a7165-3be7-4825-a0a1-e51a7f1ea13e",
+      "Content": "Incident INC-1001 on Payment API (Production): SSL Certificate Error.\nSeverity: Critical.\nDescription: SSL/TLS handshake failure on payment gateway endpoint\nRecent change: Upgraded payment gateway client library last week\nRoot cause: Root cause: SSL certificate expired on payment gateway vendor endpoint.\nResolution: Resolution: Renewed certificate with vendor and updated client certificate configuration.\nFailed attempt: Failed attempt: Restarting payment service (certificate issue unrelated to service health).\nLesson: Lesson: Set up automated certificate expiry monitoring with 30-day alerts for Payment API.",
+      "DocumentId": "INC-1001",
+      "Tags": [
+        "payment-api",
+        "ssl",
+        "certificate",
+        "critical"
+      ],
+      "CreatedAt": "2026-09-29T04:00:50.1132586Z"
+    },
+    {
+      "Id": "d0c03c2a-986a-4f9d-80f4-38ef7e1326a4",
+      "Content": "Incident INC-1002 on Authentication API (Production): 401 Unauthorized Bulk Failures.\nSeverity: Critical.\nDescription: Widespread authentication failures across all services\nRecent change: Rotated JWT signing keys as part of quarterly security review\nRoot cause: Root cause: JWT signing key rotation deployed without updating key verification configuration on dependent services.\nResolution: Resolution: Updated key verification configuration on all consumer services and performed rolling restart.\nFailed attempt: Failed attempt: Reverting authentication service (keys were correct; consumers had stale key reference).\nLesson: Lesson: JWT key rotation requires coordinated deployment with all consumers. Use key versioning and overlap periods.",
+      "DocumentId": "INC-1002",
+      "Tags": [
+        "auth-api",
+        "jwt",
+        "authentication",
+        "key-rotation"
+      ],
+      "CreatedAt": "2026-09-29T04:00:50.3502768Z"
+    },
+    {
+      "Id": "65069ad3-b344-4d48-99ac-c316b5d3982b",
+      "Content": "Incident INC-1003 on Notification Service (Production): Message Delivery Failure.\nSeverity: High.\nDescription: Email and SMS notifications not being delivered\nRecent change: Deployed new Kubernetes node pool for notification workers\nRoot cause: Root cause: Queue consumer pods crashed due to missing environment variable in new node pool configuration.\nResolution: Resolution: Added missing SMTP_HOST environment variable to pod spec and redeployed.\nFailed attempt: Failed attempt: Restarting queue consumers without fixing environment (pods kept crashing).\nLesson: Lesson: Validate all required environment variables in deployment pipeline before rollout.",
+      "DocumentId": "INC-1003",
+      "Tags": [
+        "notification",
+        "queue",
+        "consumer",
+        "kubernetes"
+      ],
+      "CreatedAt": "2026-09-29T04:00:50.5643267Z"
+    },
+    {
+      "Id": "61f22c0a-a36b-4392-b2ad-874f15c33986",
+      "Content": "Incident INC-1004 on Order Service (Production): High Latency.\nSeverity: High.\nDescription: Order lookup latency spiked from 50ms to 8000ms\nRecent change: Ran database migration adding order history archive table\nRoot cause: Root cause: Database migration added archive table but removed index on orders.customer_id causing full table scans.\nResolution: Resolution: Recreated index concurrently: CREATE INDEX CONCURRENTLY idx_orders_customer_id ON orders(customer_id).\nFailed attempt: Failed attempt: Scaling up Order Service replicas (bottleneck was DB query, not compute).\nLesson: Lesson: Always include index verification in migration scripts for high-traffic tables.",
+      "DocumentId": "INC-1004",
+      "Tags": [
+        "order-service",
+        "database",
+        "index",
+        "latency",
+        "migration"
+      ],
+      "CreatedAt": "2026-09-29T04:00:50.7866943Z"
+    },
+    {
+      "Id": "988c2feb-62dd-4948-bdb8-47cb14a4aa62",
+      "Content": "Incident INC-1005 on Redis Cache (Production): Connection Timeout.\nSeverity: High.\nDescription: Redis connection timeouts across all services\nRecent change: Increased session TTL from 2 hours to 24 hours for improved UX\nRoot cause: Root cause: Redis memory exhausted due to TTL increase causing too many cached sessions to accumulate simultaneously.\nResolution: Resolution: Set maxmemory policy to allkeys-lru and evicted stale data. Reduced session TTL to 4 hours.\nFailed attempt: Failed attempt: Restarting Redis (data loss without maxmemory policy set would have caused cache stampede).\nLesson: Lesson: Always set Redis maxmemory and eviction policy. Monitor memory utilization when changing TTLs.",
+      "DocumentId": "INC-1005",
+      "Tags": [
+        "redis",
+        "cache",
+        "memory",
+        "oom",
+        "timeout"
+      ],
+      "CreatedAt": "2026-09-29T04:00:50.9980214Z"
+    },
+    {
+      "Id": "2e3f86a5-a867-4a05-9e29-0b24431b838e",
+      "Content": "Incident INC-1006 on API Gateway (Production): 504 Gateway Timeout.\nSeverity: Critical.\nDescription: All API calls timing out through the gateway\nRecent change: Ran marketing campaign causing 10x traffic spike\nRoot cause: Root cause: API Gateway upstream timeout set too low (5s) for upstream services under high load. Services were responding but slowly.\nResolution: Resolution: Increased API Gateway upstream timeout to 30s and added circuit breaker rules. Scaled up upstream services.\nFailed attempt: Failed attempt: Restarting API Gateway (issue was timeout config, not gateway health).\nLesson: Lesson: API Gateway timeouts should be tuned based on upstream p99 latency under load, not p50.",
+      "DocumentId": "INC-1006",
+      "Tags": [
+        "api-gateway",
+        "timeout",
+        "504",
+        "circuit-breaker",
+        "traffic"
+      ],
+      "CreatedAt": "2026-09-29T04:00:51.2267663Z"
+    },
+    {
+      "Id": "18cebc7d-1e80-4323-baba-9233d65389df",
+      "Content": "Incident INC-1007 on User API (Production): 429 Too Many Requests.\nSeverity: Medium.\nDescription: Users unable to complete sign-up flow\nRecent change: Ran targeted email campaign driving 50k new sign-up attempts\nRoot cause: Root cause: Rate limiter configured at 100 req/min per IP blocked legitimate users behind shared NAT/proxy.\nResolution: Resolution: Switched rate limiting to per-account rather than per-IP and increased global limit.\nFailed attempt: Failed attempt: Disabling rate limiter entirely (would have allowed bot attacks).\nLesson: Lesson: Rate limiting on shared IPs blocks legitimate users. Use account-level or token-bucket per user.",
+      "DocumentId": "INC-1007",
+      "Tags": [
+        "user-api",
+        "rate-limiting",
+        "429",
+        "signup"
+      ],
+      "CreatedAt": "2026-09-29T04:00:51.4554179Z"
+    },
+    {
+      "Id": "4b425bd3-4b7d-40f9-9668-cfb9f0782e5b",
+      "Content": "Incident INC-1008 on Search Service (Production): Out of Memory.\nSeverity: High.\nDescription: Search service pods OOMKilled repeatedly\nRecent change: Updated search index to include product descriptions (larger documents)\nRoot cause: Root cause: Lucene search index buffer not released after query, causing memory leak with larger documents.\nResolution: Resolution: Added query-level buffer limit and upgraded search library version that fixed the leak.\nFailed attempt: Failed attempt: Increasing pod memory limit (only delayed the OOM crash).\nLesson: Lesson: Memory leaks require root cause fix, not just resource limit increases. Profile memory on library upgrades.",
+      "DocumentId": "INC-1008",
+      "Tags": [
+        "search",
+        "oom",
+        "memory-leak",
+        "lucene"
+      ],
+      "CreatedAt": "2026-09-29T04:00:51.6681462Z"
+    },
+    {
+      "Id": "e11ccb4e-657b-46fa-86e9-aff93c3728c6",
+      "Content": "Incident INC-1009 on PostgreSQL Database (Production): Max Connections Exceeded.\nSeverity: Critical.\nDescription: Database refusing new connections\nRecent change: Deployed 5 new microservices all connecting to the main database\nRoot cause: Root cause: Total connection pool across all services exceeded PostgreSQL max_connections (100) after new deployments.\nResolution: Resolution: Deployed PgBouncer connection pooler. Reduced per-service pool size. Increased max_connections to 200.\nFailed attempt: Failed attempt: Restarting PostgreSQL (connections reestablished immediately).\nLesson: Lesson: Use a connection pooler (PgBouncer) for multi-service architectures. Set max_connections budget per service.",
+      "DocumentId": "INC-1009",
+      "Tags": [
+        "postgresql",
+        "connections",
+        "pgbouncer",
+        "database"
+      ],
+      "CreatedAt": "2026-09-29T04:00:51.8765984Z"
+    },
+    {
+      "Id": "9ed00045-0f6a-47c3-b5a5-fea255a2265b",
+      "Content": "Incident INC-1010 on File Storage Service (Production): Disk Full Error.\nSeverity: High.\nDescription: File uploads failing with 500 errors\nRecent change: Temporarily disabled cleanup job to avoid touching production data during migration\nRoot cause: Root cause: Scheduled cleanup job was disabled and disk reached 100% capacity with temporary upload files.\nResolution: Resolution: Manually cleaned temporary files, re-enabled cleanup job, added disk space alert at 80%.\nFailed attempt: Failed attempt: Increasing instance size (disk was 100% full, new capacity still needed cleanup).\nLesson: Lesson: Never disable cleanup jobs without a time-boxed plan and disk space monitoring.",
+      "DocumentId": "INC-1010",
+      "Tags": [
+        "file-storage",
+        "disk",
+        "cleanup",
+        "storage"
+      ],
+      "CreatedAt": "2026-09-29T04:00:52.0866558Z"
+    },
+    {
+      "Id": "5dd69871-2464-46f1-90b9-f4ec35697962",
+      "Content": "Incident INC-1011 on Order Service (Staging): Database Deadlock.\nSeverity: Medium.\nDescription: Order creation failing intermittently\nRecent change: Refactored order transaction to update inventory and payments simultaneously\nRoot cause: Root cause: Concurrent transactions acquiring locks in different order (inventory then payment vs payment then inventory) caused deadlocks.\nResolution: Resolution: Enforced consistent lock acquisition order: always inventory first, then payment.\nFailed attempt: Failed attempt: Increasing transaction timeout (deadlocks retried and failed again).\nLesson: Lesson: Always acquire database locks in consistent order across all transactions to prevent deadlocks.",
+      "DocumentId": "INC-1011",
+      "Tags": [
+        "order-service",
+        "deadlock",
+        "database",
+        "transaction"
+      ],
+      "CreatedAt": "2026-09-29T04:00:52.2938083Z"
+    },
+    {
+      "Id": "04dcc0f0-a2ad-43ed-a64c-ebbc66660e88",
+      "Content": "Incident INC-1012 on Authentication API (Production): Stale Session Tokens.\nSeverity: Medium.\nDescription: Users still accessing system after account deactivation\nRecent change: Switched from stateful sessions to stateless JWT tokens\nRoot cause: Root cause: JWT tokens are stateless; no token revocation mechanism. Deactivated users retained valid tokens.\nResolution: Resolution: Implemented token blacklist in Redis and added revocation check on each request.\nFailed attempt: Failed attempt: Setting very short JWT expiry (1 minute) - degraded UX too severely.\nLesson: Lesson: Stateless JWTs require revocation mechanism for account deactivation/logout scenarios.",
+      "DocumentId": "INC-1012",
+      "Tags": [
+        "auth-api",
+        "jwt",
+        "token",
+        "revocation",
+        "security"
+      ],
+      "CreatedAt": "2026-09-29T04:00:52.5030565Z"
+    },
+    {
+      "Id": "28586374-3bc6-499c-99ef-1090997b65e3",
+      "Content": "Incident INC-1013 on Search Service (Production): Empty Search Results.\nSeverity: High.\nDescription: All search queries returning 0 results\nRecent change: Ran search index rebuild over the weekend\nRoot cause: Root cause: Index rebuild failed midway due to storage timeout, leaving a corrupted partial index that was swapped live.\nResolution: Resolution: Rolled back to previous index snapshot and implemented index rebuild validation before swap.\nFailed attempt: Failed attempt: Reindexing again without validation (same failure would occur).\nLesson: Lesson: Always validate index rebuild completion before swapping. Implement blue-green index deployment.",
+      "DocumentId": "INC-1013",
+      "Tags": [
+        "search",
+        "index",
+        "corruption",
+        "rebuild"
+      ],
+      "CreatedAt": "2026-09-29T04:00:52.7100696Z"
+    },
+    {
+      "Id": "08c5775e-dfe9-4270-9b0c-7524fb85ea47",
+      "Content": "Incident INC-1014 on Notification Service (Production): Email Delivery Delay.\nSeverity: Medium.\nDescription: Transactional emails delayed by 4\u002B hours\nRecent change: Increased email notification frequency for all users (daily digest changed to hourly)\nRoot cause: Root cause: SendGrid rate limit exceeded due to 10x increase in email volume from frequency change.\nResolution: Resolution: Implemented exponential backoff retry with queue prioritization. Upgraded SendGrid plan.\nFailed attempt: Failed attempt: Simply retrying at maximum rate (caused further rate limiting).\nLesson: Lesson: Third-party API rate limits must be calculated before changing notification frequency.",
+      "DocumentId": "INC-1014",
+      "Tags": [
+        "notification",
+        "email",
+        "rate-limit",
+        "sendgrid"
+      ],
+      "CreatedAt": "2026-09-29T04:00:52.9177584Z"
+    },
+    {
+      "Id": "26c5ec38-abaf-4e21-a5e4-6004b8c3743b",
+      "Content": "Incident INC-1015 on API Gateway (Production): 503 Service Unavailable.\nSeverity: Critical.\nDescription: All traffic returning 503 for specific API version\nRecent change: Deployed new API version routing rules to API Gateway\nRoot cause: Root cause: Routing rule typo sent /api/v2/* traffic to /dev/null upstream instead of v2 service cluster.\nResolution: Resolution: Fixed routing rule and redeployed. Traffic restored in 2 minutes.\nFailed attempt: Failed attempt: Restarting v2 service instances (routing was sending traffic to wrong target).\nLesson: Lesson: API Gateway routing changes must be tested in staging with traffic simulation before production.",
+      "DocumentId": "INC-1015",
+      "Tags": [
+        "api-gateway",
+        "routing",
+        "503",
+        "configuration"
+      ],
+      "CreatedAt": "2026-09-29T04:00:53.1288355Z"
+    },
+    {
+      "Id": "0bfd4b9b-0165-48f4-8405-6f871921f65f",
+      "Content": "Incident INC-1016 on User API (Production): 500 Internal Server Error.\nSeverity: High.\nDescription: User profile updates failing\nRecent change: Added new required field \u0027preferred_timezone\u0027 to user profile schema\nRoot cause: Root cause: New required column added without default value. Existing users missing the field cause NOT NULL constraint violations.\nResolution: Resolution: Added default value (\u0027UTC\u0027) to column and backfilled existing records.\nFailed attempt: Failed attempt: Rolling back API code (DB schema was already migrated in production).\nLesson: Lesson: Never add NOT NULL columns without default values. Use nullable or backfill strategy.",
+      "DocumentId": "INC-1016",
+      "Tags": [
+        "user-api",
+        "schema",
+        "migration",
+        "null-constraint"
+      ],
+      "CreatedAt": "2026-09-29T04:00:53.3476966Z"
+    },
+    {
+      "Id": "bc6c0c64-f1c3-4630-88e6-62b984f268c1",
+      "Content": "Incident INC-1017 on Redis Cache (Production): Cache Miss Storm.\nSeverity: Medium.\nDescription: Cache hit rate dropped from 95% to 12%\nRecent change: Deployed application update with new cache key format\nRoot cause: Root cause: New cache key format invalidated all existing cached data simultaneously causing cache stampede.\nResolution: Resolution: Implemented cache warming with gradual migration period and dual-key support.\nFailed attempt: Failed attempt: Flushing old cache manually (accelerated stampede rather than mitigating it).\nLesson: Lesson: Cache key format changes need migration strategy. Use versioned keys with warm-up period.",
+      "DocumentId": "INC-1017",
+      "Tags": [
+        "redis",
+        "cache",
+        "stampede",
+        "key-migration"
+      ],
+      "CreatedAt": "2026-09-29T04:00:53.5638408Z"
+    },
+    {
+      "Id": "7700b7e8-93a9-45b7-8721-711c3e325010",
+      "Content": "Incident INC-1018 on PostgreSQL Database (Production): Slow Queries.\nSeverity: Medium.\nDescription: Query performance degraded by 300% on high-traffic tables\nRecent change: Disabled autovacuum during peak hours to reduce I/O\nRoot cause: Root cause: Table bloat from disabled autovacuum. TOAST entries accumulated, causing large sequential scans.\nResolution: Resolution: Re-enabled autovacuum, ran manual VACUUM ANALYZE on affected tables. Created vacuum schedule.\nFailed attempt: Failed attempt: Adding indexes (did not help because statistics were stale).\nLesson: Lesson: Never disable autovacuum in production. Use cost-based autovacuum settings to minimize impact.",
+      "DocumentId": "INC-1018",
+      "Tags": [
+        "postgresql",
+        "vacuum",
+        "bloat",
+        "performance"
+      ],
+      "CreatedAt": "2026-09-29T04:00:53.7723517Z"
+    },
+    {
+      "Id": "0293ae8b-dcb0-4895-a71e-78854b0e5398",
+      "Content": "Incident INC-1019 on File Storage Service (Production): 403 Forbidden.\nSeverity: Medium.\nDescription: User unable to download their files\nRecent change: Migrated file storage to new S3 bucket for cost optimization\nRoot cause: Root cause: New bucket IAM policy did not replicate user-level ACLs from old bucket.\nResolution: Resolution: Applied user-specific ACL migration script and updated IAM policy to include user-scoped permissions.\nFailed attempt: Failed attempt: Making bucket public (unacceptable security risk).\nLesson: Lesson: S3 bucket migrations must include ACL validation step. Never sacrifice security for quick fixes.",
+      "DocumentId": "INC-1019",
+      "Tags": [
+        "file-storage",
+        "s3",
+        "iam",
+        "permissions",
+        "403"
+      ],
+      "CreatedAt": "2026-09-29T04:00:53.9800971Z"
+    },
+    {
+      "Id": "a8119537-9151-48c1-bdc5-6c20d7d04a95",
+      "Content": "Incident INC-1020 on Order Service (Production): Order Processing Delay.\nSeverity: High.\nDescription: Orders stuck in processing state for 30\u002B minutes\nRecent change: Deployed order processing service update during business hours\nRoot cause: Root cause: Rolling deployment caused temporary queue consumer gap where orders queued but were not processed.\nResolution: Resolution: Drained queue with emergency consumer instances. Implemented zero-downtime deployment with overlapping consumers.\nFailed attempt: Failed attempt: Restarting just the failed instances (missed that queue had backlog from deployment gap).\nLesson: Lesson: Stateful queue consumers need zero-downtime deployment strategy with backlog monitoring.",
+      "DocumentId": "INC-1020",
+      "Tags": [
+        "order-service",
+        "queue",
+        "deployment",
+        "backlog"
+      ],
+      "CreatedAt": "2026-09-29T04:00:54.1952075Z"
+    },
+    {
+      "Id": "1d59343d-f77f-4c54-8423-424aba0d4a0d",
+      "Content": "Incident INC-1021 on Payment API (Production): Payment Gateway Rejection.\nSeverity: Critical.\nDescription: All payment transactions rejected by gateway\nRecent change: Upgraded payment gateway SDK to latest version\nRoot cause: Root cause: New SDK version changed certificate pinning hashes. Production environment had old pinned certificate hashes.\nResolution: Resolution: Updated certificate pinning configuration with new hashes from gateway documentation.\nFailed attempt: Failed attempt: Downgrading SDK (caused different compatibility errors).\nLesson: Lesson: Read SDK upgrade notes for security configuration changes. Test payment flows end-to-end in staging.",
+      "DocumentId": "INC-1021",
+      "Tags": [
+        "payment-api",
+        "certificate-pinning",
+        "sdk",
+        "upgrade"
+      ],
+      "CreatedAt": "2026-09-29T04:00:54.4033974Z"
+    },
+    {
+      "Id": "f99c39cc-b8ba-4448-9c26-df7da4255e66",
+      "Content": "Incident INC-1022 on Search Service (Production): High CPU Utilization.\nSeverity: High.\nDescription: Search latency at 15\u002B seconds, CPU at 100%\nRecent change: Added fuzzy search with Levenshtein distance across all string fields\nRoot cause: Root cause: Fuzzy matching on all fields without index support caused O(n*m) computation on every query.\nResolution: Resolution: Limited fuzzy search to name/title fields only, implemented field-level result boosting.\nFailed attempt: Failed attempt: Horizontal scaling (CPU was still maxed per instance).\nLesson: Lesson: Fuzzy/approximate matching is expensive. Apply only to indexed fields and limit distance threshold.",
+      "DocumentId": "INC-1022",
+      "Tags": [
+        "search",
+        "cpu",
+        "performance",
+        "fuzzy-search"
+      ],
+      "CreatedAt": "2026-09-29T04:00:54.640851Z"
+    },
+    {
+      "Id": "eedd49f1-59dc-4bcf-a711-1101b86a089c",
+      "Content": "Incident INC-1023 on Authentication API (Production): Suspicious Authentication Activity.\nSeverity: Critical.\nDescription: Multiple accounts accessed from impossible geographic locations\nRecent change: None - detected during security audit\nRoot cause: Root cause: JWT tokens stolen from insecure client-side storage (localStorage) and used from different locations.\nResolution: Resolution: Migrated tokens to httpOnly cookies, implemented IP binding for admin sessions, added device fingerprinting.\nFailed attempt: Failed attempt: IP-based blocking (attackers used VPN to match original IP).\nLesson: Lesson: Never store JWTs in localStorage. Use httpOnly cookies. Implement behavioral anomaly detection.",
+      "DocumentId": "INC-1023",
+      "Tags": [
+        "auth-api",
+        "security",
+        "jwt",
+        "replay-attack",
+        "token-theft"
+      ],
+      "CreatedAt": "2026-09-29T04:00:54.8550569Z"
+    },
+    {
+      "Id": "95d3b49a-3701-49c7-a751-aff06751672c",
+      "Content": "Incident INC-1024 on Notification Service (Production): Push Notification Failure.\nSeverity: Medium.\nDescription: Mobile push notifications not delivered\nRecent change: Firebase Cloud Messaging (FCM) platform had minor service disruption\nRoot cause: Root cause: FCM service disruption caused delivery failures. No fallback notification mechanism existed.\nResolution: Resolution: Implemented SMS fallback for critical notifications when push delivery fails.\nFailed attempt: Failed attempt: Retrying immediately (FCM still down, queue grew further).\nLesson: Lesson: Implement fallback delivery channels for critical notifications. Monitor third-party provider status pages.",
+      "DocumentId": "INC-1024",
+      "Tags": [
+        "notification",
+        "push",
+        "fcm",
+        "dependency",
+        "fallback"
+      ],
+      "CreatedAt": "2026-09-29T04:00:55.0572655Z"
+    },
+    {
+      "Id": "fadf07ac-2ca4-45f3-a577-248eb85b533f",
+      "Content": "Incident INC-1025 on API Gateway (Production): Mixed Content Errors.\nSeverity: High.\nDescription: Web clients reporting mixed content warnings blocking resources\nRecent change: Added new API endpoints served from a microservice not behind the gateway\nRoot cause: Root cause: New microservice exposed HTTP endpoints directly without going through SSL-terminating API Gateway.\nResolution: Resolution: Routed all microservice traffic through API Gateway. Enforced HTTPS-only policy.\nFailed attempt: Failed attempt: Setting HSTS header (did not fix existing HTTP endpoint exposure).\nLesson: Lesson: All service endpoints must be routed through API Gateway. Enforce TLS at gateway level, never bypass.",
+      "DocumentId": "INC-1025",
+      "Tags": [
+        "api-gateway",
+        "ssl",
+        "tls",
+        "https",
+        "security"
+      ],
+      "CreatedAt": "2026-09-29T04:00:55.2646943Z"
+    },
+    {
+      "Id": "7f7b8efe-db8f-4f8a-8a43-94f168fb7f26",
+      "Content": "Incident INC-1001 on Payment API (Production): SSL Certificate Error.\nSeverity: Critical.\nDescription: SSL/TLS handshake failure on payment gateway endpoint\nRecent change: Upgraded payment gateway client library last week\nRoot cause: Root cause: SSL certificate expired on payment gateway vendor endpoint.\nResolution: Resolution: Renewed certificate with vendor and updated client certificate configuration.\nFailed attempt: Failed attempt: Restarting payment service (certificate issue unrelated to service health).\nLesson: Lesson: Set up automated certificate expiry monitoring with 30-day alerts for Payment API.",
+      "DocumentId": "INC-1001",
+      "Tags": [
+        "payment-api",
+        "ssl",
+        "certificate",
+        "critical"
+      ],
+      "CreatedAt": "2026-09-29T04:01:54.5010763Z"
+    },
+    {
+      "Id": "9ecaec8c-728f-42e7-bcb1-947cacaf39d7",
+      "Content": "Incident INC-1002 on Authentication API (Production): 401 Unauthorized Bulk Failures.\nSeverity: Critical.\nDescription: Widespread authentication failures across all services\nRecent change: Rotated JWT signing keys as part of quarterly security review\nRoot cause: Root cause: JWT signing key rotation deployed without updating key verification configuration on dependent services.\nResolution: Resolution: Updated key verification configuration on all consumer services and performed rolling restart.\nFailed attempt: Failed attempt: Reverting authentication service (keys were correct; consumers had stale key reference).\nLesson: Lesson: JWT key rotation requires coordinated deployment with all consumers. Use key versioning and overlap periods.",
+      "DocumentId": "INC-1002",
+      "Tags": [
+        "auth-api",
+        "jwt",
+        "authentication",
+        "key-rotation"
+      ],
+      "CreatedAt": "2026-09-29T04:01:54.7076372Z"
+    },
+    {
+      "Id": "3de95490-4ec6-4c43-86a0-ac66599b20e2",
+      "Content": "Incident INC-1003 on Notification Service (Production): Message Delivery Failure.\nSeverity: High.\nDescription: Email and SMS notifications not being delivered\nRecent change: Deployed new Kubernetes node pool for notification workers\nRoot cause: Root cause: Queue consumer pods crashed due to missing environment variable in new node pool configuration.\nResolution: Resolution: Added missing SMTP_HOST environment variable to pod spec and redeployed.\nFailed attempt: Failed attempt: Restarting queue consumers without fixing environment (pods kept crashing).\nLesson: Lesson: Validate all required environment variables in deployment pipeline before rollout.",
+      "DocumentId": "INC-1003",
+      "Tags": [
+        "notification",
+        "queue",
+        "consumer",
+        "kubernetes"
+      ],
+      "CreatedAt": "2026-09-29T04:01:54.9098414Z"
+    },
+    {
+      "Id": "47ac0593-7b13-438b-9e0b-b6cfd89db4c6",
+      "Content": "Incident INC-1004 on Order Service (Production): High Latency.\nSeverity: High.\nDescription: Order lookup latency spiked from 50ms to 8000ms\nRecent change: Ran database migration adding order history archive table\nRoot cause: Root cause: Database migration added archive table but removed index on orders.customer_id causing full table scans.\nResolution: Resolution: Recreated index concurrently: CREATE INDEX CONCURRENTLY idx_orders_customer_id ON orders(customer_id).\nFailed attempt: Failed attempt: Scaling up Order Service replicas (bottleneck was DB query, not compute).\nLesson: Lesson: Always include index verification in migration scripts for high-traffic tables.",
+      "DocumentId": "INC-1004",
+      "Tags": [
+        "order-service",
+        "database",
+        "index",
+        "latency",
+        "migration"
+      ],
+      "CreatedAt": "2026-09-29T04:01:55.1099997Z"
+    },
+    {
+      "Id": "dd75b46d-9cf7-42b6-b3c6-a129f091a9ee",
+      "Content": "Incident INC-1005 on Redis Cache (Production): Connection Timeout.\nSeverity: High.\nDescription: Redis connection timeouts across all services\nRecent change: Increased session TTL from 2 hours to 24 hours for improved UX\nRoot cause: Root cause: Redis memory exhausted due to TTL increase causing too many cached sessions to accumulate simultaneously.\nResolution: Resolution: Set maxmemory policy to allkeys-lru and evicted stale data. Reduced session TTL to 4 hours.\nFailed attempt: Failed attempt: Restarting Redis (data loss without maxmemory policy set would have caused cache stampede).\nLesson: Lesson: Always set Redis maxmemory and eviction policy. Monitor memory utilization when changing TTLs.",
+      "DocumentId": "INC-1005",
+      "Tags": [
+        "redis",
+        "cache",
+        "memory",
+        "oom",
+        "timeout"
+      ],
+      "CreatedAt": "2026-09-29T04:01:55.3261819Z"
+    },
+    {
+      "Id": "334a7c76-be52-492d-8587-4fccb130ed32",
+      "Content": "Incident INC-1006 on API Gateway (Production): 504 Gateway Timeout.\nSeverity: Critical.\nDescription: All API calls timing out through the gateway\nRecent change: Ran marketing campaign causing 10x traffic spike\nRoot cause: Root cause: API Gateway upstream timeout set too low (5s) for upstream services under high load. Services were responding but slowly.\nResolution: Resolution: Increased API Gateway upstream timeout to 30s and added circuit breaker rules. Scaled up upstream services.\nFailed attempt: Failed attempt: Restarting API Gateway (issue was timeout config, not gateway health).\nLesson: Lesson: API Gateway timeouts should be tuned based on upstream p99 latency under load, not p50.",
+      "DocumentId": "INC-1006",
+      "Tags": [
+        "api-gateway",
+        "timeout",
+        "504",
+        "circuit-breaker",
+        "traffic"
+      ],
+      "CreatedAt": "2026-09-29T04:01:55.5292063Z"
+    },
+    {
+      "Id": "216a0b47-b008-4886-aeb4-9b97ac4138af",
+      "Content": "Incident INC-1007 on User API (Production): 429 Too Many Requests.\nSeverity: Medium.\nDescription: Users unable to complete sign-up flow\nRecent change: Ran targeted email campaign driving 50k new sign-up attempts\nRoot cause: Root cause: Rate limiter configured at 100 req/min per IP blocked legitimate users behind shared NAT/proxy.\nResolution: Resolution: Switched rate limiting to per-account rather than per-IP and increased global limit.\nFailed attempt: Failed attempt: Disabling rate limiter entirely (would have allowed bot attacks).\nLesson: Lesson: Rate limiting on shared IPs blocks legitimate users. Use account-level or token-bucket per user.",
+      "DocumentId": "INC-1007",
+      "Tags": [
+        "user-api",
+        "rate-limiting",
+        "429",
+        "signup"
+      ],
+      "CreatedAt": "2026-09-29T04:01:55.7385657Z"
+    },
+    {
+      "Id": "08d63aef-3114-41fa-ab59-24ec92de2d4f",
+      "Content": "Incident INC-1008 on Search Service (Production): Out of Memory.\nSeverity: High.\nDescription: Search service pods OOMKilled repeatedly\nRecent change: Updated search index to include product descriptions (larger documents)\nRoot cause: Root cause: Lucene search index buffer not released after query, causing memory leak with larger documents.\nResolution: Resolution: Added query-level buffer limit and upgraded search library version that fixed the leak.\nFailed attempt: Failed attempt: Increasing pod memory limit (only delayed the OOM crash).\nLesson: Lesson: Memory leaks require root cause fix, not just resource limit increases. Profile memory on library upgrades.",
+      "DocumentId": "INC-1008",
+      "Tags": [
+        "search",
+        "oom",
+        "memory-leak",
+        "lucene"
+      ],
+      "CreatedAt": "2026-09-29T04:01:55.9437294Z"
+    },
+    {
+      "Id": "fa307110-0a2a-47b9-9b4b-1fa7e5392ed0",
+      "Content": "Incident INC-1009 on PostgreSQL Database (Production): Max Connections Exceeded.\nSeverity: Critical.\nDescription: Database refusing new connections\nRecent change: Deployed 5 new microservices all connecting to the main database\nRoot cause: Root cause: Total connection pool across all services exceeded PostgreSQL max_connections (100) after new deployments.\nResolution: Resolution: Deployed PgBouncer connection pooler. Reduced per-service pool size. Increased max_connections to 200.\nFailed attempt: Failed attempt: Restarting PostgreSQL (connections reestablished immediately).\nLesson: Lesson: Use a connection pooler (PgBouncer) for multi-service architectures. Set max_connections budget per service.",
+      "DocumentId": "INC-1009",
+      "Tags": [
+        "postgresql",
+        "connections",
+        "pgbouncer",
+        "database"
+      ],
+      "CreatedAt": "2026-09-29T04:01:56.1515696Z"
+    },
+    {
+      "Id": "4ffa1363-fdc8-45c3-adf5-f99a08d035da",
+      "Content": "Incident INC-1010 on File Storage Service (Production): Disk Full Error.\nSeverity: High.\nDescription: File uploads failing with 500 errors\nRecent change: Temporarily disabled cleanup job to avoid touching production data during migration\nRoot cause: Root cause: Scheduled cleanup job was disabled and disk reached 100% capacity with temporary upload files.\nResolution: Resolution: Manually cleaned temporary files, re-enabled cleanup job, added disk space alert at 80%.\nFailed attempt: Failed attempt: Increasing instance size (disk was 100% full, new capacity still needed cleanup).\nLesson: Lesson: Never disable cleanup jobs without a time-boxed plan and disk space monitoring.",
+      "DocumentId": "INC-1010",
+      "Tags": [
+        "file-storage",
+        "disk",
+        "cleanup",
+        "storage"
+      ],
+      "CreatedAt": "2026-09-29T04:01:56.363944Z"
+    },
+    {
+      "Id": "60579cb3-869e-4b55-b74a-946125cdc67d",
+      "Content": "Incident INC-1011 on Order Service (Staging): Database Deadlock.\nSeverity: Medium.\nDescription: Order creation failing intermittently\nRecent change: Refactored order transaction to update inventory and payments simultaneously\nRoot cause: Root cause: Concurrent transactions acquiring locks in different order (inventory then payment vs payment then inventory) caused deadlocks.\nResolution: Resolution: Enforced consistent lock acquisition order: always inventory first, then payment.\nFailed attempt: Failed attempt: Increasing transaction timeout (deadlocks retried and failed again).\nLesson: Lesson: Always acquire database locks in consistent order across all transactions to prevent deadlocks.",
+      "DocumentId": "INC-1011",
+      "Tags": [
+        "order-service",
+        "deadlock",
+        "database",
+        "transaction"
+      ],
+      "CreatedAt": "2026-09-29T04:01:56.5835349Z"
+    },
+    {
+      "Id": "53f42d0a-2b2e-4e41-bade-d26ef82b1638",
+      "Content": "Incident INC-1012 on Authentication API (Production): Stale Session Tokens.\nSeverity: Medium.\nDescription: Users still accessing system after account deactivation\nRecent change: Switched from stateful sessions to stateless JWT tokens\nRoot cause: Root cause: JWT tokens are stateless; no token revocation mechanism. Deactivated users retained valid tokens.\nResolution: Resolution: Implemented token blacklist in Redis and added revocation check on each request.\nFailed attempt: Failed attempt: Setting very short JWT expiry (1 minute) - degraded UX too severely.\nLesson: Lesson: Stateless JWTs require revocation mechanism for account deactivation/logout scenarios.",
+      "DocumentId": "INC-1012",
+      "Tags": [
+        "auth-api",
+        "jwt",
+        "token",
+        "revocation",
+        "security"
+      ],
+      "CreatedAt": "2026-09-29T04:01:56.7917285Z"
+    },
+    {
+      "Id": "da3358c9-4930-4d97-8731-fa8c9b585175",
+      "Content": "Incident INC-1013 on Search Service (Production): Empty Search Results.\nSeverity: High.\nDescription: All search queries returning 0 results\nRecent change: Ran search index rebuild over the weekend\nRoot cause: Root cause: Index rebuild failed midway due to storage timeout, leaving a corrupted partial index that was swapped live.\nResolution: Resolution: Rolled back to previous index snapshot and implemented index rebuild validation before swap.\nFailed attempt: Failed attempt: Reindexing again without validation (same failure would occur).\nLesson: Lesson: Always validate index rebuild completion before swapping. Implement blue-green index deployment.",
+      "DocumentId": "INC-1013",
+      "Tags": [
+        "search",
+        "index",
+        "corruption",
+        "rebuild"
+      ],
+      "CreatedAt": "2026-09-29T04:01:57.0077101Z"
+    },
+    {
+      "Id": "33d8034b-c8dc-4a09-a9bb-357577a61b96",
+      "Content": "Incident INC-1014 on Notification Service (Production): Email Delivery Delay.\nSeverity: Medium.\nDescription: Transactional emails delayed by 4\u002B hours\nRecent change: Increased email notification frequency for all users (daily digest changed to hourly)\nRoot cause: Root cause: SendGrid rate limit exceeded due to 10x increase in email volume from frequency change.\nResolution: Resolution: Implemented exponential backoff retry with queue prioritization. Upgraded SendGrid plan.\nFailed attempt: Failed attempt: Simply retrying at maximum rate (caused further rate limiting).\nLesson: Lesson: Third-party API rate limits must be calculated before changing notification frequency.",
+      "DocumentId": "INC-1014",
+      "Tags": [
+        "notification",
+        "email",
+        "rate-limit",
+        "sendgrid"
+      ],
+      "CreatedAt": "2026-09-29T04:01:57.2358133Z"
+    },
+    {
+      "Id": "ba670603-edb8-4f8e-9bcb-7768be5b5343",
+      "Content": "Incident INC-1015 on API Gateway (Production): 503 Service Unavailable.\nSeverity: Critical.\nDescription: All traffic returning 503 for specific API version\nRecent change: Deployed new API version routing rules to API Gateway\nRoot cause: Root cause: Routing rule typo sent /api/v2/* traffic to /dev/null upstream instead of v2 service cluster.\nResolution: Resolution: Fixed routing rule and redeployed. Traffic restored in 2 minutes.\nFailed attempt: Failed attempt: Restarting v2 service instances (routing was sending traffic to wrong target).\nLesson: Lesson: API Gateway routing changes must be tested in staging with traffic simulation before production.",
+      "DocumentId": "INC-1015",
+      "Tags": [
+        "api-gateway",
+        "routing",
+        "503",
+        "configuration"
+      ],
+      "CreatedAt": "2026-09-29T04:01:57.4656443Z"
+    },
+    {
+      "Id": "b942fc2a-68bf-4c20-b5c2-710033fc59e1",
+      "Content": "Incident INC-1016 on User API (Production): 500 Internal Server Error.\nSeverity: High.\nDescription: User profile updates failing\nRecent change: Added new required field \u0027preferred_timezone\u0027 to user profile schema\nRoot cause: Root cause: New required column added without default value. Existing users missing the field cause NOT NULL constraint violations.\nResolution: Resolution: Added default value (\u0027UTC\u0027) to column and backfilled existing records.\nFailed attempt: Failed attempt: Rolling back API code (DB schema was already migrated in production).\nLesson: Lesson: Never add NOT NULL columns without default values. Use nullable or backfill strategy.",
+      "DocumentId": "INC-1016",
+      "Tags": [
+        "user-api",
+        "schema",
+        "migration",
+        "null-constraint"
+      ],
+      "CreatedAt": "2026-09-29T04:01:57.6804589Z"
+    },
+    {
+      "Id": "42c1985a-2348-4acf-b8be-7a4beda45520",
+      "Content": "Incident INC-1017 on Redis Cache (Production): Cache Miss Storm.\nSeverity: Medium.\nDescription: Cache hit rate dropped from 95% to 12%\nRecent change: Deployed application update with new cache key format\nRoot cause: Root cause: New cache key format invalidated all existing cached data simultaneously causing cache stampede.\nResolution: Resolution: Implemented cache warming with gradual migration period and dual-key support.\nFailed attempt: Failed attempt: Flushing old cache manually (accelerated stampede rather than mitigating it).\nLesson: Lesson: Cache key format changes need migration strategy. Use versioned keys with warm-up period.",
+      "DocumentId": "INC-1017",
+      "Tags": [
+        "redis",
+        "cache",
+        "stampede",
+        "key-migration"
+      ],
+      "CreatedAt": "2026-09-29T04:01:57.8889638Z"
+    },
+    {
+      "Id": "63919416-6a5a-4a93-b663-840b0b424917",
+      "Content": "Incident INC-1018 on PostgreSQL Database (Production): Slow Queries.\nSeverity: Medium.\nDescription: Query performance degraded by 300% on high-traffic tables\nRecent change: Disabled autovacuum during peak hours to reduce I/O\nRoot cause: Root cause: Table bloat from disabled autovacuum. TOAST entries accumulated, causing large sequential scans.\nResolution: Resolution: Re-enabled autovacuum, ran manual VACUUM ANALYZE on affected tables. Created vacuum schedule.\nFailed attempt: Failed attempt: Adding indexes (did not help because statistics were stale).\nLesson: Lesson: Never disable autovacuum in production. Use cost-based autovacuum settings to minimize impact.",
+      "DocumentId": "INC-1018",
+      "Tags": [
+        "postgresql",
+        "vacuum",
+        "bloat",
+        "performance"
+      ],
+      "CreatedAt": "2026-09-29T04:01:58.1106422Z"
+    },
+    {
+      "Id": "7e3f8bbf-5cdd-4c26-b8e4-d95cccfe9d81",
+      "Content": "Incident INC-1019 on File Storage Service (Production): 403 Forbidden.\nSeverity: Medium.\nDescription: User unable to download their files\nRecent change: Migrated file storage to new S3 bucket for cost optimization\nRoot cause: Root cause: New bucket IAM policy did not replicate user-level ACLs from old bucket.\nResolution: Resolution: Applied user-specific ACL migration script and updated IAM policy to include user-scoped permissions.\nFailed attempt: Failed attempt: Making bucket public (unacceptable security risk).\nLesson: Lesson: S3 bucket migrations must include ACL validation step. Never sacrifice security for quick fixes.",
+      "DocumentId": "INC-1019",
+      "Tags": [
+        "file-storage",
+        "s3",
+        "iam",
+        "permissions",
+        "403"
+      ],
+      "CreatedAt": "2026-09-29T04:01:58.3204434Z"
+    },
+    {
+      "Id": "432d89bd-9bb2-46a3-93a0-61fbb147f961",
+      "Content": "Incident INC-1020 on Order Service (Production): Order Processing Delay.\nSeverity: High.\nDescription: Orders stuck in processing state for 30\u002B minutes\nRecent change: Deployed order processing service update during business hours\nRoot cause: Root cause: Rolling deployment caused temporary queue consumer gap where orders queued but were not processed.\nResolution: Resolution: Drained queue with emergency consumer instances. Implemented zero-downtime deployment with overlapping consumers.\nFailed attempt: Failed attempt: Restarting just the failed instances (missed that queue had backlog from deployment gap).\nLesson: Lesson: Stateful queue consumers need zero-downtime deployment strategy with backlog monitoring.",
+      "DocumentId": "INC-1020",
+      "Tags": [
+        "order-service",
+        "queue",
+        "deployment",
+        "backlog"
+      ],
+      "CreatedAt": "2026-09-29T04:01:58.52766Z"
+    },
+    {
+      "Id": "d963770a-efe3-4aa1-b8c1-77e83fa40a5f",
+      "Content": "Incident INC-1021 on Payment API (Production): Payment Gateway Rejection.\nSeverity: Critical.\nDescription: All payment transactions rejected by gateway\nRecent change: Upgraded payment gateway SDK to latest version\nRoot cause: Root cause: New SDK version changed certificate pinning hashes. Production environment had old pinned certificate hashes.\nResolution: Resolution: Updated certificate pinning configuration with new hashes from gateway documentation.\nFailed attempt: Failed attempt: Downgrading SDK (caused different compatibility errors).\nLesson: Lesson: Read SDK upgrade notes for security configuration changes. Test payment flows end-to-end in staging.",
+      "DocumentId": "INC-1021",
+      "Tags": [
+        "payment-api",
+        "certificate-pinning",
+        "sdk",
+        "upgrade"
+      ],
+      "CreatedAt": "2026-09-29T04:01:58.7506401Z"
+    },
+    {
+      "Id": "d403ade0-4689-4729-af24-63ad2510b10d",
+      "Content": "Incident INC-1022 on Search Service (Production): High CPU Utilization.\nSeverity: High.\nDescription: Search latency at 15\u002B seconds, CPU at 100%\nRecent change: Added fuzzy search with Levenshtein distance across all string fields\nRoot cause: Root cause: Fuzzy matching on all fields without index support caused O(n*m) computation on every query.\nResolution: Resolution: Limited fuzzy search to name/title fields only, implemented field-level result boosting.\nFailed attempt: Failed attempt: Horizontal scaling (CPU was still maxed per instance).\nLesson: Lesson: Fuzzy/approximate matching is expensive. Apply only to indexed fields and limit distance threshold.",
+      "DocumentId": "INC-1022",
+      "Tags": [
+        "search",
+        "cpu",
+        "performance",
+        "fuzzy-search"
+      ],
+      "CreatedAt": "2026-09-29T04:01:58.9862127Z"
+    },
+    {
+      "Id": "5b05e8cd-fb12-4e58-9474-de805d4039e4",
+      "Content": "Incident INC-1023 on Authentication API (Production): Suspicious Authentication Activity.\nSeverity: Critical.\nDescription: Multiple accounts accessed from impossible geographic locations\nRecent change: None - detected during security audit\nRoot cause: Root cause: JWT tokens stolen from insecure client-side storage (localStorage) and used from different locations.\nResolution: Resolution: Migrated tokens to httpOnly cookies, implemented IP binding for admin sessions, added device fingerprinting.\nFailed attempt: Failed attempt: IP-based blocking (attackers used VPN to match original IP).\nLesson: Lesson: Never store JWTs in localStorage. Use httpOnly cookies. Implement behavioral anomaly detection.",
+      "DocumentId": "INC-1023",
+      "Tags": [
+        "auth-api",
+        "security",
+        "jwt",
+        "replay-attack",
+        "token-theft"
+      ],
+      "CreatedAt": "2026-09-29T04:01:59.2429626Z"
+    },
+    {
+      "Id": "b98b52a2-f8c5-4bf1-90f3-6a3b4d5f1f13",
+      "Content": "Incident INC-1024 on Notification Service (Production): Push Notification Failure.\nSeverity: Medium.\nDescription: Mobile push notifications not delivered\nRecent change: Firebase Cloud Messaging (FCM) platform had minor service disruption\nRoot cause: Root cause: FCM service disruption caused delivery failures. No fallback notification mechanism existed.\nResolution: Resolution: Implemented SMS fallback for critical notifications when push delivery fails.\nFailed attempt: Failed attempt: Retrying immediately (FCM still down, queue grew further).\nLesson: Lesson: Implement fallback delivery channels for critical notifications. Monitor third-party provider status pages.",
+      "DocumentId": "INC-1024",
+      "Tags": [
+        "notification",
+        "push",
+        "fcm",
+        "dependency",
+        "fallback"
+      ],
+      "CreatedAt": "2026-09-29T04:01:59.4662447Z"
+    },
+    {
+      "Id": "8eac0fd1-ab89-45a8-845c-4a53d89f782d",
+      "Content": "Incident INC-1025 on API Gateway (Production): Mixed Content Errors.\nSeverity: High.\nDescription: Web clients reporting mixed content warnings blocking resources\nRecent change: Added new API endpoints served from a microservice not behind the gateway\nRoot cause: Root cause: New microservice exposed HTTP endpoints directly without going through SSL-terminating API Gateway.\nResolution: Resolution: Routed all microservice traffic through API Gateway. Enforced HTTPS-only policy.\nFailed attempt: Failed attempt: Setting HSTS header (did not fix existing HTTP endpoint exposure).\nLesson: Lesson: All service endpoints must be routed through API Gateway. Enforce TLS at gateway level, never bypass.",
+      "DocumentId": "INC-1025",
+      "Tags": [
+        "api-gateway",
+        "ssl",
+        "tls",
+        "https",
+        "security"
+      ],
+      "CreatedAt": "2026-09-29T04:01:59.6813721Z"
+    },
+    {
+      "Id": "10a89522-75c0-4040-83db-0abb27e88733",
+      "Content": "Incident INC-1002 on Payment API (Production): 502 Bad Gateway.\r\nRecent change: Payment gateway timeout increased from 30s to 60s.\r\nDescription: Payment gateway returning 502 errors to all clients\r\nWhat worked: Increased connection pool from 50 to 100 connections.\r\nFailed attempt: Increasing payment gateway timeout was unrelated to root cause.\r\nLesson: Always check DB connection pool first before adjusting gateway timeouts.\r\nSeverity: Critical. Resolved: N/A.",
+      "DocumentId": "INC-1002",
+      "Tags": [
+        "incident",
+        "Payment API",
+        "Critical",
+        "502"
+      ],
+      "CreatedAt": "2026-09-29T04:02:03.9959798Z"
+    },
+    {
+      "Id": "6cc148c9-526d-435c-a7f4-1d24cf104090",
+      "Content": "POST-MORTEM: # Post-Mortem: INC-1002\n\n**Date:** 2026-09-29  \n**Service:** Payment API  \n**Severity:** Critical  \n**Environment:** Production  \n\n## Summary\n502 Bad Gateway on Payment API in Production.\n\n## Impact\nService degradation on Payment API affecting production users.\n\n## Timeline\n- \u006004:02\u0060 \u2014 Incident created: 502 Bad Gateway\n\n\n## Root Cause\nUnknown - under investigation\n\n## Resolution\nN/A\n\n## Failed Attempts\n- None documented\n\n## Lessons Learned\nAlways check DB connection pool first before adjusting gateway timeouts\n\n## Action Items\n- [ ] Update runbook for Payment API\n- [ ] Add monitoring alert for early detection\n- [ ] Document fix in knowledge base",
+      "DocumentId": "postmortem-INC-1002",
+      "Tags": [
+        "postmortem",
+        "Payment API",
+        "knowledge"
+      ],
+      "CreatedAt": "2026-09-29T04:02:04.5064795Z"
+    },
+    {
+      "Id": "2d81bf73-504e-4eff-b8e4-3ae415ed36b0",
+      "Content": "Incident INC-1002 on Payment API (Production): 502 Bad Gateway.\r\nRecent change: Payment gateway timeout increased from 30s to 60s.\r\nDescription: Payment gateway returning 502 errors to all clients\r\nRoot cause: PostgreSQL connection pool exhausted (pool size: 50).\r\nResolution: Increased connection pool from 50 to 100 connections.\r\nWhat worked: Increased connection pool from 50 to 100 connections.\r\nFailed attempt: Increasing payment gateway timeout was unrelated to root cause.\r\nLesson: Always check DB connection pool first before adjusting gateway timeouts.\r\nSeverity: Critical. Resolved: 2026-09-29.",
+      "DocumentId": "INC-1002",
+      "Tags": [
+        "incident",
+        "Payment API",
+        "Critical",
+        "502"
+      ],
+      "CreatedAt": "2026-09-29T04:02:40.4631267Z"
+    },
+    {
+      "Id": "ce1b2ccf-9028-4a22-9da9-4c66a5e59d82",
+      "Content": "POST-MORTEM: # Post-Mortem: INC-1002\n\n**Date:** 2026-09-29  \n**Service:** Payment API  \n**Severity:** Critical  \n**Environment:** Production  \n\n## Summary\n502 Bad Gateway on Payment API in Production.\n\n## Impact\nService degradation on Payment API affecting production users.\n\n## Timeline\n- \u006004:02\u0060 \u2014 Incident created: 502 Bad Gateway\n- \u006004:02\u0060 \u2014 Incident resolved\n\n## Root Cause\nPostgreSQL connection pool exhausted (pool size: 50)\n\n## Resolution\nIncreased connection pool from 50 to 100 connections\n\n## Failed Attempts\n- None documented\n\n## Lessons Learned\nAlways check DB connection pool first before adjusting gateway timeouts\n\n## Action Items\n- [ ] Update runbook for Payment API\n- [ ] Add monitoring alert for early detection\n- [ ] Document fix in knowledge base",
+      "DocumentId": "postmortem-INC-1002",
+      "Tags": [
+        "postmortem",
+        "Payment API",
+        "knowledge"
+      ],
+      "CreatedAt": "2026-09-29T04:02:40.7055489Z"
+    },
+    {
+      "Id": "6b7f5a93-9e86-4648-906a-505566483b62",
+      "Content": "POST-MORTEM: # Post-Mortem: INC-1002\n\n**Date:** 2026-09-29  \n**Service:** Payment API  \n**Severity:** Critical  \n**Environment:** Production  \n\n## Summary\n502 Bad Gateway on Payment API in Production.\n\n## Impact\nService degradation on Payment API affecting production users.\n\n## Timeline\n- \u006004:02\u0060 \u2014 Incident created: 502 Bad Gateway\n- \u006004:02\u0060 \u2014 Incident resolved\n\n## Root Cause\nPostgreSQL connection pool exhausted (pool size: 50)\n\n## Resolution\nIncreased connection pool from 50 to 100 connections\n\n## Failed Attempts\n- None documented\n\n## Lessons Learned\nAlways check DB connection pool first before adjusting gateway timeouts\n\n## Action Items\n- [ ] Update runbook for Payment API\n- [ ] Add monitoring alert for early detection\n- [ ] Document fix in knowledge base",
+      "DocumentId": "postmortem-INC-1002",
+      "Tags": [
+        "postmortem",
+        "Payment API",
+        "knowledge"
+      ],
+      "CreatedAt": "2026-09-29T04:02:47.3470097Z"
+    }
+  ]
+}
